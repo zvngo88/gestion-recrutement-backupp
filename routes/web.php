@@ -54,7 +54,9 @@ Route::prefix('posts/{post}/steps')->group(function () {
 });
 
 
+Route::get('/candidates/{candidate}/assign', [CandidateController::class, 'assign'])->name('candidates.assign');
+Route::post('/candidates/{candidate}/assign', [CandidateController::class, 'storeAssignment'])->name('candidates.storeAssignment');
+Route::get('/posts/{post}/candidates/{candidate}/steps', [StepController::class, 'show'])->name('steps.show');
+Route::patch('/posts/{post}/candidates/{candidate}/steps/{step}', [StepController::class, 'update'])->name('steps.update');
 
-// Associer explicitement l'ID de la route avec le modèle Step
-Route::model('step', Step::class);
 

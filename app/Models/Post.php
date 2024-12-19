@@ -25,5 +25,11 @@ class Post extends Model
     return $this->hasMany(Step::class);
 }
 
+ // Relation many-to-many entre Post et Candidate
+ public function candidates()
+ {
+     return $this->belongsToMany(Candidate::class);
+ }
+
 
 }

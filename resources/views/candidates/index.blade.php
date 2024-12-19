@@ -42,6 +42,13 @@
                                 @method('DELETE')
                                 <button type="submit" class="text-red-500 hover:text-red-600" onclick="return confirm('Confirmer la suppression ?')">Supprimer</button>
                             </form>
+
+                            @if($candidate->status !== 'Affecté')
+                                |
+                                <a href="{{ route('candidates.assign', $candidate->id) }}" class="text-blue-500 hover:text-blue-600">Affecter à un poste</a>
+                            @else
+                                <span class="text-green-500">Affecté</span>
+                            @endif
                         </td>
                     </tr>
                 @endforeach

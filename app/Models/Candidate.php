@@ -19,4 +19,9 @@ class Candidate extends Model
         $this->status = $status;
         $this->save();
     }
+
+    public function posts()
+    {
+        return $this->belongsToMany(Post::class);
+    }
 }
