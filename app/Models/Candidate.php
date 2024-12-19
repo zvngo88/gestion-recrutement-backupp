@@ -11,6 +11,7 @@ class Candidate extends Model
         'email',
         'status',
         'skills', // Ajoutez des compétences ou d'autres champs selon vos besoins
+        'resume',
     ];
 
     // Méthode pour définir le statut du candidat

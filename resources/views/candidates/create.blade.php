@@ -4,7 +4,7 @@
 <div class="container mx-auto px-6 py-6">
     <h1 class="text-3xl font-semibold text-gray-800">Créer un Nouveau Candidat</h1>
 
-    <form action="{{ route('candidates.store') }}" method="POST" class="mt-6">
+    <form action="{{ route('candidates.store') }}" method="POST" class="mt-6" enctype="multipart/form-data">
         @csrf
         <div class="grid grid-cols-1 gap-6">
             <div>
@@ -28,6 +28,11 @@
             <div>
                 <label for="skills" class="block text-sm font-semibold text-gray-600">Compétences</label>
                 <textarea name="skills" id="skills" rows="4" class="mt-1 block w-full px-4 py-2 border rounded-md"></textarea>
+            </div>
+
+            <div>
+                <label for="resume" class="block text-sm font-semibold text-gray-600">CV (fichier PDF ou DOCX)</label>
+                <input type="file" name="resume" id="resume" class="mt-1 block w-full px-4 py-2 border rounded-md" accept=".pdf,.docx">
             </div>
         </div>
 

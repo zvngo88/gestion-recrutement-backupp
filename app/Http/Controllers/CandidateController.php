@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Post;
@@ -38,9 +39,19 @@ class CandidateController extends Controller
             'email' => 'required|email|unique:candidates,email',
             'status' => 'required|string',
             'skills' => 'nullable|string',
+            'resume' => 'nullable|mimes:pdf,doc,docx|max:10240', // Validation du fichier (max 10MB)
         ]);
 
-        Candidate::create($request->all());
+        $data = $request->all();
+
+        // Gestion du téléchargement du fichier de CV
+        if ($request->hasFile('resume')) {
+            $path = $request->file('resume')->store('resumes', 'public'); // Stocker le fichier dans le dossier 'storage/app/public/resumes'
+            $data['resume'] = $path; // Enregistrer le chemin du fichier dans la base de données
+        }
+
+        Candidate::create($data);
+
         return redirect()->route('candidates.index')->with('success', 'Candidat créé avec succès');
     }
 
@@ -64,16 +75,38 @@ class CandidateController extends Controller
             'email' => 'required|email|unique:candidates,email,' . $candidate->id,
             'status' => 'required|string',
             'skills' => 'nullable|string',
+            'resume' => 'nullable|mimes:pdf,doc,docx|max:10240', // Validation du fichier (max 10MB)
         ]);
 
-        $candidate->update($request->all());
+        $data = $request->all();
+
+        // Gestion du téléchargement du fichier de CV
+        if ($request->hasFile('resume')) {
+            // Supprimer l'ancien CV si un nouveau est téléchargé
+            if ($candidate->resume) {
+                \Storage::delete('public/' . $candidate->resume); // Suppression du fichier existant
+            }
+
+            // Stocker le nouveau fichier de CV
+            $path = $request->file('resume')->store('resumes', 'public');
+            $data['resume'] = $path; // Enregistrer le chemin du fichier dans la base de données
+        }
+
+        $candidate->update($data);
+
         return redirect()->route('candidates.index')->with('success', 'Candidat mis à jour avec succès');
     }
 
     // Supprimer un candidat
     public function destroy(Candidate $candidate)
     {
+        // Supprimer le fichier CV si existant
+        if ($candidate->resume) {
+            \Storage::delete('public/' . $candidate->resume);
+        }
+
         $candidate->delete();
+
         return redirect()->route('candidates.index')->with('success', 'Candidat supprimé avec succès');
     }
 

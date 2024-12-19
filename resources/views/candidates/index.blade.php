@@ -10,6 +10,14 @@
         </div>
     @endif
 
+    <!-- Formulaire de recherche -->
+    <form action="{{ route('candidates.index') }}" method="GET" class="mt-4 mb-6">
+        <div class="flex items-center space-x-4">
+            <input type="text" name="search" placeholder="Rechercher par nom ou email" class="px-4 py-2 border rounded-md w-1/3" value="{{ request('search') }}">
+            <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all duration-300">Rechercher</button>
+        </div>
+    </form>
+
     <a href="{{ route('candidates.create') }}" class="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all duration-300">Créer un Nouveau Candidat</a>
 
     <div class="mt-6">
@@ -20,6 +28,7 @@
                     <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Nom</th>
                     <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Email</th>
                     <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Statut</th>
+                    <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">CV</th>
                     <th class="px-6 py-4 text-center text-sm font-semibold text-gray-600">Actions</th>
                 </tr>
             </thead>
@@ -33,6 +42,13 @@
                             <span class="px-3 py-1 text-sm rounded-full {{ $candidate->status === 'Affecté' ? 'bg-green-200 text-green-700' : 'bg-blue-200 text-blue-700' }}">
                                 {{ $candidate->status }}
                             </span>
+                        </td>
+                        <td class="px-6 py-4">
+                            @if($candidate->resume)
+                                <a href="{{ Storage::url($candidate->resume) }}" class="text-blue-500 hover:text-blue-600" target="_blank">Télécharger le CV</a>
+                            @else
+                                <span class="text-red-500">Pas de CV</span>
+                            @endif
                         </td>
                         <td class="px-6 py-4 text-center">
                             <a href="{{ route('candidates.edit', $candidate->id) }}" class="text-yellow-500 hover:text-yellow-600">Modifier</a>
