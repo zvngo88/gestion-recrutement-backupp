@@ -2,6 +2,11 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\CandidateController;
+use App\Http\Controllers\StepController;
+use App\Models\Post;
+use App\Models\Step;
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -23,3 +28,33 @@ Route::middleware([
 });
 
 Route::patch('/posts/{post}/toggle-status', [PostController::class, 'toggleStatus'])->name('posts.toggleStatus');
+// Afficher la liste des candidats
+Route::get('/candidates', [CandidateController::class, 'index'])->name('candidates.index');
+
+// Afficher le formulaire de création d'un candidat
+Route::get('/candidates/create', [CandidateController::class, 'create'])->name('candidates.create');
+
+// Sauvegarder un nouveau candidat
+Route::post('/candidates', [CandidateController::class, 'store'])->name('candidates.store');
+
+// Afficher le formulaire de modification d'un candidat
+Route::get('/candidates/{candidate}/edit', [CandidateController::class, 'edit'])->name('candidates.edit');
+
+// Mettre à jour un candidat
+Route::put('/candidates/{candidate}', [CandidateController::class, 'update'])->name('candidates.update');
+
+// Supprimer un candidat
+Route::delete('/candidates/{candidate}', [CandidateController::class, 'destroy'])->name('candidates.destroy');
+
+
+Route::prefix('posts/{post}/steps')->group(function () {
+    Route::get('/', [StepController::class, 'index'])->name('steps.index');
+    Route::post('/', [StepController::class, 'store'])->name('steps.store');
+    Route::patch('/{stepId}', [StepController::class, 'update'])->name('steps.update');
+});
+
+
+
+// Associer explicitement l'ID de la route avec le modèle Step
+Route::model('step', Step::class);
+

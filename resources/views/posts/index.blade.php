@@ -49,6 +49,10 @@
                             <a href="{{ route('posts.edit', $post->id) }}" class="inline-block px-6 py-3 bg-yellow-600 text-white rounded-lg shadow-md hover:bg-yellow-700 transition duration-300">
                                 Modifier
                             </a>
+                            <!-- Suivre les étapes -->
+                            <a href="{{ route('steps.index', $post->id) }}" class="inline-block px-6 py-3 bg-teal-600 text-white rounded-lg shadow-md hover:bg-teal-700 transition duration-300">
+                                Suivre les étapes
+                            </a>
                             <!-- Toggle status -->
                             <form action="{{ route('posts.toggleStatus', $post->id) }}" method="POST" class="inline-block">
                                 @csrf

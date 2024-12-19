@@ -19,4 +19,11 @@ class Post extends Model
     {
         return $this->status === self::STATUS_ACTIF;
     }
+
+    public function steps()
+{
+    return $this->hasMany(Step::class);
+}
+
+
 }
