@@ -7,6 +7,7 @@ use App\Http\Controllers\StepController;
 use App\Models\Post;
 use App\Models\Step;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\InterviewController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -60,6 +61,11 @@ Route::get('/posts/{post}/candidates/{candidate}/steps', [StepController::class,
 Route::patch('/posts/{post}/candidates/{candidate}/steps/{step}', [StepController::class, 'update'])->name('steps.update');
 
 
+
+
+Route::get('/interviews', [InterviewController::class, 'index'])->name('interviews.index');
+Route::post('/interviews', [InterviewController::class, 'store'])->name('interviews.store');
+Route::get('/interviews/{id}/email', [InterviewController::class, 'sendOutlookEmail'])->name('interviews.email');
 
 
 Route::resource('clients', ClientController::class);
