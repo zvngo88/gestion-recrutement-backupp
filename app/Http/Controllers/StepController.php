@@ -28,23 +28,28 @@ class StepController extends Controller
     }
 
     public function update(Request $request, $postId, $stepId)
-{
-    // Récupérer le modèle Post et Step manuellement
-    $post = Post::findOrFail($postId);  // Récupérer le Post
-    $step = Step::where('post_id', $post->id)->findOrFail($stepId);  // Récupérer le Step associé au Post
+    {
+        $post = Post::findOrFail($postId);
+        $step = Step::where('post_id', $post->id)->findOrFail($stepId);
 
-    // Validation des données
-    $request->validate([
-        'status' => 'boolean',
-        'start_date' => 'nullable|date',
-        'end_date' => 'nullable|date|after_or_equal:start_date',
-    ]);
+        $request->validate([
+            'status' => 'nullable|boolean',  // Accepte un status null ou un boolean
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
+        ]);
 
-    // Mettre à jour le modèle Step
-    $step->update($request->only('status', 'start_date', 'end_date'));
+        // Convertir la valeur en boolean (si null ou non défini, mettre false)
+        $status = $request->has('status') ? (bool) $request->input('status') : false;
 
-    // Retourner un message de succès
-    return back()->with('success', 'Étape mise à jour avec succès.');
-}
+        // Mettre à jour le modèle Step
+        $step->update([
+            'status' => $status,
+            'start_date' => $request->input('start_date'),
+            'end_date' => $request->input('end_date')
+        ]);
+
+        return back()->with('success', 'Étape mise à jour avec succès.');
+    }
+
 
 }
