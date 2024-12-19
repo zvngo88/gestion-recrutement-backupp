@@ -9,11 +9,15 @@ use Illuminate\Http\Request;
 class StepController extends Controller
 {
     public function index(Post $post)
-    {
-        // Récupérer les étapes du poste
-        $steps = $post->steps;
-        return view('steps.index', compact('post', 'steps'));
-    }
+{
+    // Récupérer le candidat associé, par exemple le premier candidat du poste
+    $candidate = $post->candidates()->first(); // Tu peux adapter cette logique selon tes besoins
+
+    $steps = $post->steps;
+
+    return view('steps.index', compact('post', 'candidate', 'steps'));
+}
+
 
     public function store(Request $request, Post $post)
     {
@@ -48,7 +52,7 @@ class StepController extends Controller
 
         // Mise à jour du modèle Step
         $step->update([
-            'status' => $status,
+            'status' => $status,  // Mise à jour du statut (checkbox)
             'start_date' => $request->input('start_date'),
             'end_date' => $request->input('end_date'),
             'justification' => $request->input('justification'), // Mise à jour de la justification

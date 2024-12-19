@@ -6,7 +6,7 @@ use App\Http\Controllers\CandidateController;
 use App\Http\Controllers\StepController;
 use App\Models\Post;
 use App\Models\Step;
-
+use App\Http\Controllers\ClientController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -60,3 +60,6 @@ Route::get('/posts/{post}/candidates/{candidate}/steps', [StepController::class,
 Route::patch('/posts/{post}/candidates/{candidate}/steps/{step}', [StepController::class, 'update'])->name('steps.update');
 
 
+
+
+Route::resource('clients', ClientController::class);

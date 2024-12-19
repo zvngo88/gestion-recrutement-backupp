@@ -35,7 +35,7 @@
                 <tr>
                     <td class="px-4 py-2 border">{{ $step->name }}</td>
                     <td class="px-4 py-2 border">
-                        <form method="POST" action="{{ route('steps.update', ['post' => $post->id, 'stepId' => $step->id]) }}">
+                        <form method="POST" action="{{ route('steps.update', ['post' => $post->id, 'candidate' => $candidate->id, 'step' => $step->id]) }}">
                             @csrf
                             @method('PATCH')
 
@@ -44,12 +44,12 @@
 
                             <button type="submit">Mettre à jour</button>
                         </form>
-
                     </td>
+
                     <td class="px-4 py-2 border">{{ $step->start_date }}</td>
                     <td class="px-4 py-2 border">{{ $step->end_date }}</td>
                     <td class="px-4 py-2 border">
-                        <form action="{{ route('steps.update', [$post->id, $step->id]) }}" method="POST">
+                        <form action="{{ route('steps.update', ['post' => $post->id, 'candidate' => $candidate->id, 'step' => $step->id]) }}" method="POST">
                             @csrf
                             @method('PATCH')
                             <input type="date" name="start_date" value="{{ $step->start_date }}" class="px-2 py-1 border rounded">
