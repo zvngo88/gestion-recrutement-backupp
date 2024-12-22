@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\Post;
 
@@ -21,12 +22,23 @@ class PostController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'title' => 'required',
-            'description' => 'nullable',
+        // Validation des champs du formulaire
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'start_date' => 'nullable|date|after_or_equal:today',
+            'duration' => 'nullable|integer|min:1', // La durée doit être un entier positif
+            'status' => 'required|in:Actif,Inactif', // Validation du statut
         ]);
 
-        Post::create($request->all());
+        // Création d'un nouveau poste avec les données envoyées
+        Post::create([
+            'title' => $validated['title'],
+            'description' => $validated['description'],
+            'start_date' => isset($validated['start_date']) ? Carbon::parse($validated['start_date']) : null,
+            'duration' => $validated['duration'],
+            'status' => $validated['status'],
+        ]);
 
         return redirect()->route('posts.index')
                          ->with('success', 'Poste créé avec succès.');
@@ -44,12 +56,23 @@ class PostController extends Controller
 
     public function update(Request $request, Post $post)
     {
+        // Validation des champs du formulaire
         $request->validate([
-            'title' => 'required',
-            'description' => 'nullable',
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'start_date' => 'nullable|date|after_or_equal:today',
+            'duration' => 'nullable|integer|min:1',
+            'status' => 'required|in:Actif,Inactif',
         ]);
 
-        $post->update($request->all());
+        // Mise à jour du poste avec les nouvelles données
+        $post->update([
+            'title' => $request->title,
+            'description' => $request->description,
+            'start_date' => $request->start_date ? Carbon::parse($request->start_date) : null,
+            'duration' => $request->duration,
+            'status' => $request->status,
+        ]);
 
         return redirect()->route('posts.index')
                          ->with('success', 'Poste mis à jour avec succès.');

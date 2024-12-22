@@ -21,7 +21,37 @@
                 <textarea name="description" id="description" rows="5" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">{{ old('description') }}</textarea>
             </div>
 
-            <div class="flex justify-between">
+            <!-- Ajout de la date de début -->
+            <div class="mb-4">
+                <label for="start_date" class="block text-sm font-medium text-gray-700">Date de début</label>
+                <input type="date" name="start_date" id="start_date" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" value="{{ old('start_date') }}">
+                @error('start_date')
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                @enderror
+            </div>
+
+            <!-- Ajout de la durée -->
+            <div class="mb-4">
+                <label for="duration" class="block text-sm font-medium text-gray-700">Durée (en jours)</label>
+                <input type="number" name="duration" id="duration" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" value="{{ old('duration') }}">
+                @error('duration')
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                @enderror
+            </div>
+
+            <!-- Ajout du statut -->
+            <div class="mb-4">
+                <label for="status" class="block text-sm font-medium text-gray-700">Statut</label>
+                <select name="status" id="status" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required>
+                    <option value="Actif" {{ old('status') == 'Actif' ? 'selected' : '' }}>Actif</option>
+                    <option value="Inactif" {{ old('status') == 'Inactif' ? 'selected' : '' }}>Inactif</option>
+                </select>
+                @error('status')
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                @enderror
+            </div>
+
+            <div class="flex justify-between space-x-4">
                 <button type="submit" class="px-6 py-3 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-500">
                     Enregistrer
                 </button>

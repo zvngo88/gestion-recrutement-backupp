@@ -13,9 +13,11 @@ return new class extends Migration
     {
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
-            $table->string('title'); // Titre du poste
-            $table->text('description')->nullable(); // Description du poste
-            $table->string('status')->default('Actif'); // Statut : open, closed
+            $table->string('title');
+            $table->text('description')->nullable();
+            $table->date('start_date')->nullable();
+            $table->integer('duration')->nullable();
+            $table->enum('status', ['Actif', 'Inactif'])->default('Inactif');
             $table->timestamps();
         });
     }

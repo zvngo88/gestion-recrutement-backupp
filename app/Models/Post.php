@@ -9,7 +9,7 @@ class Post extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title', 'description', 'status'];
+    protected $fillable = ['title', 'description', 'status', 'start_date', 'duration'];
 
     const STATUS_ACTIF = 'Actif';
     const STATUS_INACTIF = 'Inactif';
