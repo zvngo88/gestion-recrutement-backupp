@@ -62,7 +62,7 @@ Route::patch('/posts/{post}/candidates/{candidate}/steps/{step}', [StepControlle
 
 
 
-
+Route::patch('/posts/{post}/steps/{step}', [StepController::class, 'update'])->name('steps.update');
 Route::get('/interviews', [InterviewController::class, 'index'])->name('interviews.index');
 Route::post('/interviews', [InterviewController::class, 'store'])->name('interviews.store');
 Route::get('/interviews/{id}/email', [InterviewController::class, 'sendOutlookEmail'])->name('interviews.email');

@@ -35,21 +35,26 @@
                 <tr>
                     <td class="px-4 py-2 border">{{ $step->name }}</td>
                     <td class="px-4 py-2 border">
-                        <form method="POST" action="{{ route('steps.update', ['post' => $post->id, 'candidate' => $candidate->id, 'step' => $step->id]) }}">
+                        <form method="POST" action="{{ route('steps.update', ['post' => $post->id, 'candidate' => $candidate->id ?? null, 'step' => $step->id]) }}">
                             @csrf
                             @method('PATCH')
 
-                            <label for="status">Status</label>
+                            <label for="status">Statut</label>
+
+                            <!-- Champ caché pour envoyer 0 si la case est décochée -->
+                            <input type="hidden" name="status" value="0">
+
+                            <!-- Case à cocher : si le statut est activé, elle est cochée -->
                             <input type="checkbox" id="status" name="status" value="1" {{ $step->status ? 'checked' : '' }}>
 
-                            <button type="submit">Mettre à jour</button>
+                            <button type="submit" class="px-4 py-2 bg-yellow-600 text-white rounded ml-2">Mettre à jour</button>
                         </form>
                     </td>
 
                     <td class="px-4 py-2 border">{{ $step->start_date }}</td>
                     <td class="px-4 py-2 border">{{ $step->end_date }}</td>
                     <td class="px-4 py-2 border">
-                        <form action="{{ route('steps.update', ['post' => $post->id, 'candidate' => $candidate->id, 'step' => $step->id]) }}" method="POST">
+                        <form action="{{ route('steps.update', ['post' => $post->id, 'step' => $step->id]) }}" method="POST">
                             @csrf
                             @method('PATCH')
                             <input type="date" name="start_date" value="{{ $step->start_date }}" class="px-2 py-1 border rounded">

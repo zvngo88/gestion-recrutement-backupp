@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class Post extends Model
 {
@@ -14,7 +15,7 @@ class Post extends Model
     const STATUS_ACTIF = 'Actif';
     const STATUS_INACTIF = 'Inactif';
 
-
+    protected $dates = ['start_date'];
     public function isActif()
     {
         return $this->status === self::STATUS_ACTIF;

@@ -18,6 +18,11 @@
             </span>
         </p>
 
+        <h4 class="text-xl font-semibold text-gray-800 mb-4">Date de début :</h4>
+        <p class="text-lg text-gray-700 mb-6">
+            {{ $post->start_date ? \Carbon\Carbon::parse($post->start_date)->format('d M Y') : 'Non définie' }}
+        </p>
+
         <div class="flex justify-start">
             <a href="{{ route('posts.index') }}" class="px-6 py-3 bg-gray-600 text-white font-semibold rounded-lg shadow-md hover:bg-gray-700 transition duration-300 focus:outline-none focus:ring-2 focus:ring-gray-500">
                 Retour
