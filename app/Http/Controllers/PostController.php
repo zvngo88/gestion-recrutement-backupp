@@ -49,8 +49,15 @@ class PostController extends Controller
         return view('posts.show', compact('post'));
     }
 
-    public function edit(Post $post)
+    public function edit($id)
     {
+        $post = Post::findOrFail($id);
+
+        // Convertir start_date en instance de Carbon si ce n'est pas déjà un objet Carbon
+        if ($post->start_date && !($post->start_date instanceof Carbon)) {
+            $post->start_date = Carbon::parse($post->start_date);
+        }
+
         return view('posts.edit', compact('post'));
     }
 

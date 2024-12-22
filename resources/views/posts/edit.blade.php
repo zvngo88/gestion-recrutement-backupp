@@ -11,7 +11,7 @@
 
             <div class="mb-6">
                 <label for="title" class="block text-lg font-medium text-gray-700 mb-2">Titre</label>
-                <input type="text" name="title" id="title" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" value="{{ $post->title }}" required>
+                <input type="text" name="title" id="title" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" value="{{ old('title', $post->title) }}" required>
                 @error('title')
                     <span class="text-sm text-red-500">{{ $message }}</span>
                 @enderror
@@ -19,7 +19,34 @@
 
             <div class="mb-6">
                 <label for="description" class="block text-lg font-medium text-gray-700 mb-2">Description</label>
-                <textarea name="description" id="description" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" rows="5">{{ $post->description }}</textarea>
+                <textarea name="description" id="description" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" rows="5">{{ old('description', $post->description) }}</textarea>
+            </div>
+
+            <div class="mb-6">
+                <label for="start_date" class="block text-lg font-medium text-gray-700 mb-2">Date de début</label>
+                <input type="date" name="start_date" id="start_date" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" value="{{ old('start_date', $post->start_date ? $post->start_date->format('Y-m-d') : '') }}">
+                @error('start_date')
+                    <span class="text-sm text-red-500">{{ $message }}</span>
+                @enderror
+            </div>
+
+            <div class="mb-6">
+                <label for="duration" class="block text-lg font-medium text-gray-700 mb-2">Durée (en jours)</label>
+                <input type="number" name="duration" id="duration" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" value="{{ old('duration', $post->duration) }}">
+                @error('duration')
+                    <span class="text-sm text-red-500">{{ $message }}</span>
+                @enderror
+            </div>
+
+            <div class="mb-6">
+                <label for="status" class="block text-lg font-medium text-gray-700 mb-2">Statut</label>
+                <select name="status" id="status" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="Actif" {{ old('status', $post->status) == 'Actif' ? 'selected' : '' }}>Actif</option>
+                    <option value="Inactif" {{ old('status', $post->status) == 'Inactif' ? 'selected' : '' }}>Inactif</option>
+                </select>
+                @error('status')
+                    <span class="text-sm text-red-500">{{ $message }}</span>
+                @enderror
             </div>
 
             <div class="flex justify-between items-center">
