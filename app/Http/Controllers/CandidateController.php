@@ -2,164 +2,187 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Post;
-use App\Models\Step;
 use App\Models\Candidate;
+use App\Models\Post;
+use App\Models\Assignment;
+use App\Models\TrackingStep;
 use Illuminate\Http\Request;
 
 class CandidateController extends Controller
 {
-    // Afficher la liste des candidats
-    public function index(Request $request)
+    /**
+     * Liste des candidats.
+     */
+    public function index()
     {
-        $query = Candidate::query();
-
-        // Recherche par les données du candidat (nom, email, etc.)
-        if ($request->has('search')) {
-            $query->where('name', 'like', '%' . $request->search . '%')
-                  ->orWhere('email', 'like', '%' . $request->search . '%');
-        }
-
-        $candidates = $query->get();
-
+        $candidates = Candidate::all();
         return view('candidates.index', compact('candidates'));
     }
 
-    // Afficher le formulaire pour ajouter un candidat
-    public function create()
-    {
-        return view('candidates.create');
-    }
-
-    // Sauvegarder un nouveau candidat
-    public function store(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:candidates,email',
-            'status' => 'required|string',
-            'skills' => 'nullable|string',
-            'resume' => 'nullable|mimes:pdf,doc,docx|max:10240', // Validation du fichier (max 10MB)
-        ]);
-
-        $data = $request->all();
-
-        // Gestion du téléchargement du fichier de CV
-        if ($request->hasFile('resume')) {
-            $path = $request->file('resume')->store('resumes', 'public'); // Stocker le fichier dans le dossier 'storage/app/public/resumes'
-            $data['resume'] = $path; // Enregistrer le chemin du fichier dans la base de données
-        }
-
-        Candidate::create($data);
-
-        return redirect()->route('candidates.index')->with('success', 'Candidat créé avec succès');
-    }
-
-    // Afficher un candidat spécifique
+    /**
+     * Affiche les détails d'un candidat.
+     */
     public function show(Candidate $candidate)
     {
         return view('candidates.show', compact('candidate'));
     }
 
-    // Afficher le formulaire de modification d'un candidat
-    public function edit(Candidate $candidate)
-    {
-        return view('candidates.edit', compact('candidate'));
-    }
-
-    // Mettre à jour un candidat
-    public function update(Request $request, Candidate $candidate)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:candidates,email,' . $candidate->id,
-            'status' => 'required|string',
-            'skills' => 'nullable|string',
-            'resume' => 'nullable|mimes:pdf,doc,docx|max:10240', // Validation du fichier (max 10MB)
-        ]);
-
-        $data = $request->all();
-
-        // Gestion du téléchargement du fichier de CV
-        if ($request->hasFile('resume')) {
-            // Supprimer l'ancien CV si un nouveau est téléchargé
-            if ($candidate->resume) {
-                \Storage::delete('public/' . $candidate->resume); // Suppression du fichier existant
-            }
-
-            // Stocker le nouveau fichier de CV
-            $path = $request->file('resume')->store('resumes', 'public');
-            $data['resume'] = $path; // Enregistrer le chemin du fichier dans la base de données
-        }
-
-        $candidate->update($data);
-
-        return redirect()->route('candidates.index')->with('success', 'Candidat mis à jour avec succès');
-    }
-
-    // Supprimer un candidat
-    public function destroy(Candidate $candidate)
-    {
-        // Supprimer le fichier CV si existant
-        if ($candidate->resume) {
-            \Storage::delete('public/' . $candidate->resume);
-        }
-
-        $candidate->delete();
-
-        return redirect()->route('candidates.index')->with('success', 'Candidat supprimé avec succès');
-    }
-
-    // Afficher la page d'affectation d'un candidat à un poste
+    /**
+     * Page pour affecter un candidat à un poste.
+     */
     public function assign(Candidate $candidate)
     {
         $posts = Post::all(); // Liste des postes disponibles
         return view('candidates.assign', compact('candidate', 'posts'));
     }
 
-    // Sauvegarder l'affectation d'un candidat à un poste
+    /**
+     * Enregistre une affectation.
+     */
     public function storeAssignment(Request $request, Candidate $candidate)
     {
         $request->validate([
-            'post_id' => 'required|exists:posts,id', // Validation du poste
+            'post_id' => 'required|exists:posts,id',
         ]);
 
-        // Créer une nouvelle affectation
-        $candidate->posts()->attach($request->post_id);
+        Assignment::create([
+            'candidate_id' => $candidate->id,
+            'post_id' => $request->post_id,
+            'assigned_at' => now(),
+        ]);
 
-        // Mettre à jour le statut du candidat après affectation
-        $candidate->update(['status' => 'Affecté']);
-
-        return redirect()->route('candidates.index')->with('success', 'Candidat affecté au poste avec succès.');
+        return redirect()->route('candidates.index')->with('success', 'Candidat affecté avec succès.');
     }
 
-    // Afficher les étapes du suivi du candidat pour un poste spécifique
-    public function showSteps(Candidate $candidate, Post $post)
+    /**
+     * Suivi d'une affectation.
+     */
+    public function track($assignmentId)
     {
-        // Récupérer les étapes du poste pour le candidat affecté
-        $steps = $post->steps;
-        $assignment = $candidate->posts()->where('post_id', $post->id)->first()->pivot; // Récupérer l'affectation spécifique
-
-        return view('steps.show', compact('candidate', 'post', 'steps', 'assignment'));
+        $assignment = Assignment::with(['candidate', 'post'])->findOrFail($assignmentId);
+        return view('assignments.track', compact('assignment'));
     }
 
-    // Mettre à jour le statut d'une étape du candidat
-    public function updateStepStatus(Request $request, Candidate $candidate, Post $post, Step $step)
+    /**
+     * Crée un nouveau candidat.
+     */
+    public function create()
+    {
+        return view('candidates.create');
+    }
+
+    /**
+     * Enregistre un candidat.
+     */
+    public function store(Request $request)
+    {
+        $validatedData = $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|email|unique:candidates,email',
+            'phone' => 'nullable|string|max:15',
+            'address' => 'nullable|string|max:255',
+            'current_position' => 'nullable|string|max:255',
+            'current_company' => 'nullable|string|max:255',
+            'skills' => 'nullable|string|max:500',
+            'education' => 'nullable|string|max:255',
+            'school' => 'nullable|string|max:255',
+            'nationality' => 'nullable|string|max:255',
+            'status' => 'required|string|in:Disponible,Affecté',
+        ]);
+
+        $candidate = Candidate::create([
+            'name' => $request->first_name . ' ' . $request->last_name,
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'address' => $request->address,
+            'current_position' => $request->current_position,
+            'current_company' => $request->current_company,
+            'skills' => $request->skills,
+            'education' => $request->education,
+            'school' => $request->school,
+            'nationality' => $request->nationality,
+            'status' => $request->status,
+        ]);
+
+        return redirect()->route('candidates.index')->with('success', 'Candidat créé avec succès.');
+    }
+
+    /**
+     * Modifie un candidat.
+     */
+    public function edit(Candidate $candidate)
+    {
+        return view('candidates.edit', compact('candidate'));
+    }
+
+    /**
+     * Met à jour un candidat.
+     */
+    public function update(Request $request, Candidate $candidate)
     {
         $request->validate([
-            'status' => 'nullable|boolean',
-            'justification' => 'nullable|string|max:255',
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|email|unique:candidates,email,' . $candidate->id,
+            'phone' => 'nullable|string|max:15',
+            'address' => 'nullable|string',
+            'current_position' => 'nullable|string|max:255',
+            'current_company' => 'nullable|string|max:255',
+            'skills' => 'nullable|string',
+            'education' => 'nullable|string|max:255',
+            'school' => 'nullable|string|max:255',
+            'nationality' => 'nullable|string|max:255',
+            'status' => 'required|string|in:Disponible,Affecté',
         ]);
 
-        // Trouver l'affectation
-        $assignment = $candidate->posts()->where('post_id', $post->id)->first()->pivot;
+        $candidate->update($request->all());
 
-        // Mettre à jour l'étape spécifique du candidat
-        $assignment->steps()->updateExistingPivot($step->id, [
-            'status' => $request->status ?? false, // Par défaut "NotOK" si non fourni
-            'justification' => $request->justification,
+        return redirect()->route('candidates.index')->with('success', 'Candidat mis à jour avec succès.');
+    }
+
+    /**
+     * Supprime un candidat.
+     */
+    public function destroy(Candidate $candidate)
+    {
+        $candidate->delete();
+
+        return redirect()->route('candidates.index')->with('success', 'Candidat supprimé avec succès.');
+    }
+
+    /**
+     * Suivi d'un candidat.
+     */
+    public function trackCandidate(Candidate $candidate)
+    {
+        $trackingSteps = $candidate->trackingSteps; // Étapes de suivi
+        return view('candidates.track', compact('candidate', 'trackingSteps'));
+    }
+
+    /**
+     * Enregistrement ou mise à jour du suivi d'un candidat.
+     */
+    public function storeTracking(Request $request, Candidate $candidate)
+    {
+        $request->validate([
+            'step_id' => 'required|exists:tracking_steps,id',
+            'status' => 'required|in:OK,NotOK',
+            'reason' => 'nullable|string|max:255',
         ]);
 
-        return back()->with('success', 'Statut de l\'étape mis à jour avec succès.');
+        $candidate->trackingSteps()->updateOrCreate(
+            ['step_id' => $request->step_id],
+            [
+                'status' => $request->status,
+                'reason' => $request->reason,
+                'updated_at' => now(),
+            ]
+        );
+
+        return redirect()->route('candidates.track', $candidate->id)
+            ->with('success', 'Étape enregistrée avec succès.');
     }
 }

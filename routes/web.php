@@ -60,8 +60,13 @@ Route::post('/candidates/{candidate}/assign', [CandidateController::class, 'stor
 Route::get('/posts/{post}/candidates/{candidate}/steps', [StepController::class, 'show'])->name('steps.show');
 Route::patch('/posts/{post}/candidates/{candidate}/steps/{step}', [StepController::class, 'update'])->name('steps.update');
 
+Route::resource('candidates', CandidateController::class);
+Route::get('/candidates/{candidate}/assign', [CandidateController::class, 'assign'])->name('candidates.assign');
+Route::post('/candidates/{candidate}/assign', [CandidateController::class, 'storeAssignment'])->name('candidates.storeAssignment');
+Route::get('/assignments/{assignment}', [CandidateController::class, 'track'])->name('assignments.track');
 
-
+Route::get('/candidates/{candidate}/track', [CandidateController::class, 'track'])->name('candidates.track');
+Route::post('/candidates/{candidate}/track', [CandidateController::class, 'storeTracking'])->name('candidates.storeTracking');
 Route::patch('/posts/{post}/steps/{step}', [StepController::class, 'update'])->name('steps.update');
 Route::get('/interviews', [InterviewController::class, 'index'])->name('interviews.index');
 Route::post('/interviews', [InterviewController::class, 'store'])->name('interviews.store');
