@@ -12,7 +12,14 @@ class DatabaseSeeder extends Seeder
      * Seed the application's database.
      */
     public function run(): void
-    {
+    { 
+        
+        $this->call([
+        TrackingStepsSeeder::class,
+        // Ajoutez d'autres seeders ici si nécessaire
+    ]);
+
+
         // User::factory(10)->create();
 
         User::factory()->create([

@@ -1,0 +1,137 @@
+/* Applique l'arrière-plan à la page entière */
+body {
+    margin: 0; /* Supprime les marges par défaut */
+    padding: 0; /* Supprime les paddings */
+    background-image: url('/images/background.png'); /* Chemin de votre image d'arrière-plan */
+    background-size: cover; /* Couvre toute la page */
+    background-position: center; /* Centre l'image */
+    background-repeat: no-repeat; /* Pas de répétition */
+    font-family: Arial, sans-serif; /* Police générale */
+    color: white; /* Texte en blanc */
+    height: 100vh; /* Hauteur pleine de la fenêtre */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    animation: fadeIn 3s ease-in-out; /* Animation pour le fade-in de la page */
+}
+
+/* Animation de fondu de la page entière */
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+/* Logo positionné en haut à gauche */
+.logo {
+    position: absolute;
+    top: 20px; /* Distance depuis le haut */
+    left: 20px; /* Distance depuis la gauche */
+    animation: slideIn 2s ease-out; /* Animation pour le logo */
+}
+
+.logo img {
+    width: 120px; /* Taille du logo */
+    height: auto; /* Conserve les proportions */
+}
+
+/* Animation du logo */
+@keyframes slideIn {
+    0% {
+        opacity: 0;
+        transform: translateX(-50px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Style pour centrer le contenu principal */
+.content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    animation: fadeInContent 3s ease-out; /* Animation de fade-in pour le contenu */
+}
+
+/* Animation pour le contenu */
+@keyframes fadeInContent {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.content h1 {
+    font-size: 3rem; /* Taille du texte principal */
+    margin: 10px 0;
+    animation: slideUp 1s ease-out; /* Animation de décalage vers le haut */
+}
+
+/* Animation de décalage vers le haut */
+@keyframes slideUp {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.content p {
+    font-size: 1.2rem; /* Taille du texte secondaire */
+    margin-bottom: 20px;
+    animation: fadeInText 2s ease-out; /* Animation de fondu pour le texte */
+}
+
+/* Animation de fondu pour le texte */
+@keyframes fadeInText {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.content button {
+    margin: 10px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: transform 0.3s ease-in-out; /* Transition pour l'animation des boutons */
+}
+
+.content button:hover {
+    transform: scale(1.1); /* Agrandissement du bouton au survol */
+}
+
+.btn-blue {
+    background-color: #3498db;
+    color: white;
+}
+
+.btn-green {
+    background-color: #2ecc71;
+    color: white;
+}
+
+.btn-blue:hover {
+    background-color: #2980b9;
+}
+
+.btn-green:hover {
+    background-color: #27ae60;
+}

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('post_id')->constrained()->onDelete('cascade');
             $table->string('name'); // Nom de l'étape
-            $table->boolean('status')->default(false); // OK/NotOK
+            $table->string('status')->nullable()->change();
             $table->date('start_date')->nullable(); // Date de début
             $table->date('end_date')->nullable(); // Date de fin
             $table->timestamps();

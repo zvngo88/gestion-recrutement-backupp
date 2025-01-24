@@ -54,6 +54,11 @@ Route::prefix('posts/{post}/steps')->group(function () {
     Route::patch('/{stepId}', [StepController::class, 'update'])->name('steps.update');
 });
 
+Route::post('/assignments/store', [CandidateController::class, 'storeAssignment'])->name('assignments.store');
+
+
+Route::put('candidates/{candidate}/steps', [CandidateController::class, 'updateSteps'])->name('candidates.updateSteps');
+Route::post('/candidates/{id}/upload-cv', [CandidateController::class, 'uploadCv'])->name('candidates.uploadCv');
 
 Route::get('/candidates/{candidate}/assign', [CandidateController::class, 'assign'])->name('candidates.assign');
 Route::post('/candidates/{candidate}/assign', [CandidateController::class, 'storeAssignment'])->name('candidates.storeAssignment');

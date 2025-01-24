@@ -4,6 +4,17 @@
 <div class="container mx-auto px-6 py-6">
     <h1 class="text-3xl font-semibold text-gray-800">Créer un Nouveau Candidat</h1>
 
+    @if ($errors->any())
+        <div class="mb-4 p-4 bg-red-100 border-l-4 border-red-500 text-red-700">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+
     <form action="{{ route('candidates.store') }}" method="POST" class="mt-6" enctype="multipart/form-data">
         @csrf
         <div class="grid grid-cols-1 gap-6">
@@ -48,11 +59,6 @@
             </div>
 
             <div>
-                <label for="cv" class="block text-sm font-semibold text-gray-600">CV (fichier PDF ou DOCX)</label>
-                <input type="file" name="cv" id="cv" class="mt-1 block w-full px-4 py-2 border rounded-md" accept=".pdf,.docx">
-            </div>
-
-            <div>
                 <label for="education" class="block text-sm font-semibold text-gray-600">Éducation</label>
                 <input type="text" name="education" id="education" class="mt-1 block w-full px-4 py-2 border rounded-md">
             </div>
@@ -70,7 +76,6 @@
             <div>
                 <label for="status" class="block text-sm font-semibold text-gray-600">Statut</label>
                 <select name="status" id="status" class="mt-1 block w-full px-4 py-2 border rounded-md">
-                    <option value="Disponible">Disponible</option>
                     <option value="Affecté">Affecté</option>
                 </select>
             </div>

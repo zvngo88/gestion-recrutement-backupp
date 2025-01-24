@@ -16,17 +16,17 @@
 
                         <!-- Gestion des clients -->
                         <a href="{{ route('clients.index') }}" class="block bg-yellow-500 text-white text-center py-4 rounded shadow hover:bg-yellow-600">
-                            Gestion des clients
+                            Accéder à vos clients
                         </a>
 
                         <!-- Gestion des candidats -->
                         <a href="{{ route('candidates.index') }}" class="block bg-pink-500 text-white text-center py-4 rounded shadow hover:bg-pink-600">
-                            Gestion des candidats
+                            Trouver les meilleurs talents
                         </a>
 
                         <!-- Planification des entretiens -->
                         <a href="{{ route('interviews.index') }}" class="block bg-red-500 text-white text-center py-4 rounded shadow hover:bg-red-600">
-                            Planifier un entretien
+                            Gestion des entretiens
                         </a>
                     </div>
                 </div>

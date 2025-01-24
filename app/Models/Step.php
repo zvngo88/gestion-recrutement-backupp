@@ -10,7 +10,13 @@ class Step extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['post_id', 'name', 'status', 'start_date', 'end_date'];
+    protected $fillable = [
+        'post_id',
+        'name', 
+        'status', 
+        'start_date', 
+        'end_date'
+    ];
 
     public function post()
     {

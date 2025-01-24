@@ -24,6 +24,8 @@ class CreateAssignmentsTable extends Migration
         });
     }
 
+    
+
     /**
      * Reverse the migrations.
      */

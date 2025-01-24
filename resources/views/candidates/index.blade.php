@@ -32,62 +32,115 @@
         </div>
     </form>
 
-    <!-- Liste des candidats -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        @forelse ($candidates as $candidate)
-            <!-- Card -->
-            <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition">
-                <!-- Header -->
-                <div class="flex items-center justify-between mb-4">
-                    <div>
-                        <h2 class="text-lg font-semibold text-gray-800">{{ $candidate->first_name }} {{ $candidate->last_name }}</h2>
-                        <p class="text-sm text-gray-600">{{ $candidate->current_position ?? 'Position non définie' }}</p>
-                    </div>
-                    <span class="px-3 py-1 text-sm font-medium rounded-full {{ $candidate->status == 'Disponible' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700' }}">
-                        {{ $candidate->status }}
-                    </span>
-                </div>
-                <!-- Informations détaillées -->
-                <div class="space-y-2 text-sm text-gray-700">
-                    <p><strong>Email :</strong> {{ $candidate->email }}</p>
-                    <p><strong>Téléphone :</strong> {{ $candidate->phone ?? 'Non spécifié' }}</p>
-                    <p><strong>Adresse :</strong> {{ $candidate->address ?? 'Non spécifiée' }}</p>
-                    <p><strong>Éducation :</strong> {{ $candidate->education ?? 'Non spécifiée' }}</p>
-                    <p><strong>École :</strong> {{ $candidate->school ?? 'Non spécifiée' }}</p>
-                    <p><strong>Entreprise actuelle :</strong> {{ $candidate->current_company ?? 'Non spécifiée' }}</p>
-                    <p><strong>Nationalité :</strong> {{ $candidate->nationality ?? 'Non spécifiée' }}</p>
-                    <p><strong>Compétences :</strong> {{ $candidate->skills ?? 'Non spécifiées' }}</p>
+    <!-- Tableau des candidats -->
+    <table class="table-auto w-full text-left border-collapse">
+        <thead>
+            <tr class="bg-gray-100">
+                <th class="px-4 py-2">Nom</th>
+                <th class="px-4 py-2">Email</th>
+                <th class="px-4 py-2">Téléphone</th>
+                <th class="px-4 py-2">Adresse</th>
+                <th class="px-4 py-2">Poste Actuel</th>
+                <th class="px-4 py-2">Entreprise Actuelle</th>
+                <th class="px-4 py-2">Domaines de Compétence</th>
+                <th class="px-4 py-2">École</th>
+                <th class="px-4 py-2">Nationalité</th>
+                <th class="px-4 py-2">cv</th>
+                <th class="px-4 py-2">Statut</th>
+                <th class="px-4 py-2">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse ($candidates as $candidate)
+                <tr>
+                    <td class="border px-4 py-2">{{ $candidate->first_name }} {{ $candidate->last_name }}</td>
+                    <td class="border px-4 py-2">{{ $candidate->email }}</td>
+                    <td class="border px-4 py-2">{{ $candidate->phone }}</td>
+                    <td class="border px-4 py-2">{{ $candidate->address }}</td>
+                    <td class="border px-4 py-2">{{ $candidate->current_position }}</td>
+                    <td class="border px-4 py-2">{{ $candidate->current_company }}</td>
+                    <td class="border px-4 py-2">{{ $candidate->skills }}</td>
+                    <td class="border px-4 py-2">{{ $candidate->school }}</td>
+                    <td class="border px-4 py-2">{{ $candidate->nationality }}</td>
+                
+                    <td>
+                        <form action="{{ route('candidates.uploadCv', $candidate->id) }}" method="POST" enctype="multipart/form-data">
+                            @csrf
+                            <label for="cv-{{ $candidate->id }}">Télécharger le CV</label>
+                            <input type="file" name="cv" id="cv-{{ $candidate->id }}" accept=".pdf,.doc,.docx" required>
+                            <button type="submit" class="bg-blue-500 text-white px-4 py-2">Télécharger</button>
+                        </form>
 
-                    <!-- Informations de CV -->
-                    <p><strong>Domaine :</strong> {{ $candidate->domains ?? 'Non spécifié' }}</p>
-                    <p><strong>Diplôme :</strong> {{ $candidate->diploma ?? 'Non spécifié' }}</p>
-                    <p><strong>Autres informations :</strong> {{ $candidate->other_information ?? 'Non spécifiées' }}</p>
-                </div>
-                <!-- Actions -->
-                <div class="flex justify-between items-center mt-4">
-                    <a href="{{ route('candidates.show', $candidate->id) }}" class="text-blue-500 hover:text-blue-600 font-medium">
-                        Voir détails
-                    </a>
-                    <div class="flex space-x-2">
-                        <a href="{{ route('candidates.edit', $candidate->id) }}" class="text-yellow-500 hover:text-yellow-600">
+                        @if($candidate->cv) <!-- Vérifie si le CV existe -->
+                            <br>
+                            <a href="{{ asset('storage/' . $candidate->cv) }}" target="_blank" class="text-blue-500">Voir le CV</a> <!-- Lien vers le CV -->
+                        @endif
+                    </td>
+
+
+                    <td class="border px-4 py-2">
+                        <form method="POST" action="{{ route('assignments.store') }}">
+                            @csrf
+                            <input type="hidden" name="candidate_id" value="{{ $candidate->id }}">
+                            <select name="post_id" class="border rounded p-1">
+                                <option value="">Sélectionner un poste</option>
+                                @foreach($posts as $post)
+                                    <option value="{{ $post->id }}">{{ $post->title }}</option>
+                                @endforeach
+                            </select>
+                            <button type="submit" class="bg-blue-500 text-white px-2 py-1 rounded">Affecter</button>
+                        </form>
+                    </td>
+
+                    <td class="border px-4 py-2">
+                        
+                        <a href="{{ route('candidates.edit', $candidate->id) }}" class="text-yellow-500 hover:text-yellow-600 ml-2">
                             Modifier
                         </a>
-                        <form action="{{ route('candidates.destroy', $candidate->id) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce candidat ?');">
+                        <form action="{{ route('candidates.destroy', $candidate->id) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce candidat ?');" class="inline">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="text-red-500 hover:text-red-600">Supprimer</button>
+                            <button type="submit" class="text-red-500 hover:text-red-600 ml-2">Supprimer</button>
                         </form>
-                        <a href="{{ route('candidates.track', $candidate->id) }}" class="text-gray-500 hover:text-gray-600">
-                            Suivre
-                        </a>
-                    </div>
-                </div>
-            </div>
-        @empty
-            <div class="col-span-full text-center text-gray-500">
-                Aucun candidat trouvé.
-            </div>
-        @endforelse
-    </div>
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="13" class="text-center py-4 text-gray-500">Aucun candidat trouvé.</td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
+
+    
+
+    <!-- Tableau des affectations -->
+    <h2 class="text-2xl font-bold text-gray-800 mt-8">Affectations</h2>
+    <table class="table-auto w-full text-left border-collapse mt-4">
+        <thead>
+            <tr class="bg-gray-100">
+                <th class="px-4 py-2">Poste</th>
+                <th class="px-4 py-2">Candidat</th>
+                <th class="px-4 py-2">Date d'affectation</th>
+                <th class="px-4 py-2">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse ($assignments as $assignment)
+                <tr>
+                    <td class="border px-4 py-2">{{ $assignment->post->title }}</td>
+                    <td class="border px-4 py-2">{{ $assignment->candidate->first_name }} {{ $assignment->candidate->last_name }}</td>
+                    <td class="border px-4 py-2">{{ $assignment->assigned_at }}</td>
+                    <td class="border px-4 py-2">
+                      <a href="{{ route('assignments.track', $assignment->id) }}" class="px-4 py-2 bg-blue-600 text-white rounded">Suivre</a>
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="4" class="text-center py-4 text-gray-500">Aucune affectation trouvée.</td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
 </div>
 @endsection

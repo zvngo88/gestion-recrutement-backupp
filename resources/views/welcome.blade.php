@@ -1,54 +1,141 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="fr">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Laravel</title>
-    @vite('resources/css/app.css')
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page d'Accueil</title>
+    <style>
+        /* Styles globaux */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body, html {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        /* Image d'arrière-plan */
+        .background {
+            background: url('images/fondpage.jpeg') no-repeat center center fixed;
+            background-size: cover;
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        /* Header pour le logo */
+        header {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
+
+        .logo {
+            height: 100px;
+            width: auto;
+        }
+
+        /* Contenu principal */
+        .content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+        }
+
+        .content h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            animation: fadeInDown 1s ease-in-out;
+        }
+
+        .content p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            animation: fadeIn 1.5s ease-in-out;
+        }
+
+        /* Boutons */
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 20px 100px;
+            font-size: 1rem;
+            text-decoration: none;
+            border-radius: 5px;
+            color: white;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .btn-blue {
+            background-color: #1e90ff;
+        }
+
+        .btn-green {
+            background-color: #28a745;
+        }
+
+        .btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
 </head>
-<body class="antialiased">
-    <div class="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center sm:pt-0">
-        @auth
-        <div class="w-full max-w-4xl mx-auto p-6 bg-white shadow rounded">
-            <h1 class="text-2xl font-bold mb-6 text-gray-800">Bienvenue sur le tableau de bord</h1>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <!-- Explorer les postes -->
-                <a href="{{ route('posts.index') }}" class="block bg-blue-500 text-white text-center py-4 rounded shadow hover:bg-blue-600">
-                    Explorer les postes
-                </a>
+<body>
+    <div class="background">
+        <!-- Logo en haut à gauche -->
+        <header>
+            <img src="images/logoalspective.jpeg" alt="Logo de l'entreprise" class="logo">
+        </header>
 
-                <!-- Gestion des clients -->
-                <a href="{{ route('clients.index') }}" class="block bg-yellow-500 text-white text-center py-4 rounded shadow hover:bg-yellow-600">
-                    Gestion des clients
-                </a>
-
-                <!-- Gestion des candidats -->
-                <a href="{{ route('candidates.index') }}" class="block bg-pink-500 text-white text-center py-4 rounded shadow hover:bg-pink-600">
-                    Gestion des candidats
-                </a>
-
-                <!-- Planification des entretiens -->
-                <a href="{{ route('interviews.index') }}" class="block bg-red-500 text-white text-center py-4 rounded shadow hover:bg-red-600">
-                    Planifier un entretien
-                </a>
-            </div>
-        </div>
-        @else
-        <div class="text-center">
+        <!-- Contenu principal -->
+        <main class="content">
             <h1 class="text-3xl font-bold text-gray-800">Bienvenue !</h1>
             <p class="mt-4 text-gray-600">Connectez-vous ou inscrivez-vous pour accéder aux fonctionnalités.</p>
             <div class="mt-6 flex justify-center gap-4">
                 <!-- Bouton Connexion -->
-                <a href="{{ route('login') }}" class="inline-block px-6 py-2 bg-blue-500 text-white rounded shadow hover:bg-blue-600">
+                <a href="{{ route('login') }}" class="btn btn-blue">
                     Connexion
                 </a>
                 <!-- Bouton Inscription -->
-                <a href="{{ route('register') }}" class="inline-block px-6 py-2 bg-green-500 text-white rounded shadow hover:bg-green-600">
+                <a href="{{ route('register') }}" class="btn btn-green">
                     Inscription
                 </a>
             </div>
-        </div>
-        @endauth
+        </main>
     </div>
 </body>
 </html>

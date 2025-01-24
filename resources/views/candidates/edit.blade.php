@@ -3,6 +3,15 @@
 @section('content')
 <div class="container mx-auto px-6 py-6">
     <h1 class="text-3xl font-semibold text-gray-800">Modifier le Candidat: {{ $candidate->first_name }} {{ $candidate->last_name }}</h1>
+    @if ($errors->any())
+        <div class="mb-4 p-4 bg-red-100 border-l-4 border-red-500 text-red-700">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
     <form action="{{ route('candidates.update', $candidate->id) }}" method="POST" class="mt-6" enctype="multipart/form-data">
         @csrf
@@ -56,15 +65,6 @@
                 <textarea name="skills" id="skills" rows="4" class="mt-1 block w-full px-4 py-2 border rounded-md">{{ old('skills', $candidate->skills) }}</textarea>
             </div>
 
-            <!-- CV -->
-            <div>
-                <label for="cv" class="block text-sm font-semibold text-gray-600">CV (fichier PDF ou DOCX)</label>
-                <input type="file" name="cv" id="cv" class="mt-1 block w-full px-4 py-2 border rounded-md" accept=".pdf,.docx">
-                @if($candidate->cv)
-                    <p class="mt-2 text-sm text-gray-500">CV actuel: <a href="{{ Storage::url($candidate->cv) }}" class="text-blue-500 hover:text-blue-600" target="_blank">Télécharger le CV</a></p>
-                @endif
-            </div>
-
             <!-- Éducation -->
             <div>
                 <label for="education" class="block text-sm font-semibold text-gray-600">Éducation</label>
@@ -83,6 +83,8 @@
                 <input type="text" name="nationality" id="nationality" value="{{ old('nationality', $candidate->nationality) }}" class="mt-1 block w-full px-4 py-2 border rounded-md">
             </div>
 
+            
+            
             <!-- Statut -->
             <div>
                 <label for="status" class="block text-sm font-semibold text-gray-600">Statut</label>

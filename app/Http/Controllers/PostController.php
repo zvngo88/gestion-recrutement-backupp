@@ -32,17 +32,36 @@ class PostController extends Controller
         ]);
 
         // Création d'un nouveau poste avec les données envoyées
-        Post::create([
+        $post = Post::create([
             'title' => $validated['title'],
-            'description' => $validated['description'],
+            'description' => $validated['description'] ?? null,
             'start_date' => isset($validated['start_date']) ? Carbon::parse($validated['start_date']) : null,
-            'duration' => $validated['duration'],
+            'duration' => $validated['duration'] ?? null,
             'status' => $validated['status'],
         ]);
 
+        // Ajout des étapes par défaut
+        $defaultSteps = [
+            ['name' => 'Création du poste et finalisation de la CDC', 'start_date' => now(), 'end_date' => now()->addDays(7), 'status' => 'En cours'],
+            ['name' => 'Sourcing', 'start_date' => now()->addDays(8), 'end_date' => now()->addDays(14), 'status' => 'En cours'],
+            ['name' => 'Analyse des profils', 'start_date' => now()->addDays(15), 'end_date' => now()->addDays(21), 'status' => 'En cours'],
+            ['name' => 'Shortliste', 'start_date' => now()->addDays(22), 'end_date' => now()->addDays(28), 'status' => 'En cours'],
+            ['name' => 'Entretien entreprise', 'start_date' => now()->addDays(29), 'end_date' => now()->addDays(35), 'status' => 'En cours'],
+            ['name' => 'Sélection', 'start_date' => now()->addDays(36), 'end_date' => now()->addDays(42), 'status' => 'En cours'],
+            ['name' => 'Confirmation du candidat', 'start_date' => now()->addDays(43), 'end_date' => now()->addDays(49), 'status' => 'En cours'],
+            ['name' => 'Clôture de la mission', 'start_date' => now()->addDays(50), 'end_date' => now()->addDays(56), 'status' => 'En cours'],
+        ];
+
+        // Associer les étapes au poste
+        foreach ($defaultSteps as $step) {
+            $post->steps()->create($step);
+        }
+
+        // Redirection avec message de succès
         return redirect()->route('posts.index')
-                         ->with('success', 'Poste créé avec succès.');
+                        ->with('success', 'Poste créé avec succès et étapes ajoutées.');
     }
+
 
     public function show(Post $post)
     {

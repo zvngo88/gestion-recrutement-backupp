@@ -10,10 +10,16 @@
         </a>
     </div>
 
-    <!-- Message de succès -->
+    <!-- Messages -->
     @if (session('success'))
         <div class="mb-4 p-4 bg-green-100 text-green-700 rounded-lg shadow-md border-l-4 border-green-500">
             {{ session('success') }}
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="mb-4 p-4 bg-red-100 text-red-700 rounded-lg shadow-md border-l-4 border-red-500">
+            {{ session('error') }}
         </div>
     @endif
 
@@ -37,7 +43,9 @@
                     <tr class="hover:bg-gray-50 transition duration-150">
                         <td class="px-6 py-4 text-sm font-medium text-gray-700 border-b border-gray-200">{{ $post->id }}</td>
                         <td class="px-6 py-4 text-sm text-gray-700 border-b border-gray-200">{{ $post->title }}</td>
-                        <td class="px-6 py-4 text-sm text-gray-700 border-b border-gray-200">{{ Str::limit($post->description, 50) }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-700 border-b border-gray-200">
+                            {{ Str::limit($post->description, 50, '...') }}
+                        </td>
                         <td class="px-6 py-4 text-sm text-gray-700 border-b border-gray-200">
                             {{ $post->start_date ? \Carbon\Carbon::parse($post->start_date)->format('d/m/Y') : 'Non défini' }}
                         </td>
@@ -52,33 +60,33 @@
                                 {{ $post->status }}
                             </span>
                         </td>
-                        <td class="px-6 py-4 text-center border-b border-gray-200 space-x-3">
+                        <td class="px-6 py-4 text-center border-b border-gray-200">
                             <div class="flex justify-center space-x-2">
                                 <!-- Voir le poste -->
-                                <a href="{{ route('posts.show', $post->id) }}" class="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition duration-300">
+                                <a href="{{ route('posts.show', $post->id) }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition duration-300">
                                     Voir
                                 </a>
                                 <!-- Modifier le poste -->
-                                <a href="{{ route('posts.edit', $post->id) }}" class="inline-block px-4 py-2 bg-yellow-600 text-white rounded-lg shadow-md hover:bg-yellow-700 transition duration-300">
+                                <a href="{{ route('posts.edit', $post->id) }}" class="px-4 py-2 bg-yellow-600 text-white rounded-lg shadow-md hover:bg-yellow-700 transition duration-300">
                                     Modifier
                                 </a>
                                 <!-- Suivre les étapes -->
-                                <a href="{{ route('steps.index', $post->id) }}" class="inline-block px-4 py-2 bg-teal-600 text-white rounded-lg shadow-md hover:bg-teal-700 transition duration-300">
+                                <a href="{{ route('steps.index', $post->id) }}" class="px-4 py-2 bg-teal-600 text-white rounded-lg shadow-md hover:bg-teal-700 transition duration-300">
                                     Suivre
                                 </a>
                                 <!-- Toggle status -->
                                 <form action="{{ route('posts.toggleStatus', $post->id) }}" method="POST" class="inline-block">
                                     @csrf
                                     @method('PATCH')
-                                    <button type="submit" class="inline-block px-4 py-2 {{ $post->isActif() ? 'bg-red-600' : 'bg-gray-700' }} text-white rounded-lg shadow-md hover:{{ $post->isActif() ? 'bg-red-700' : 'bg-green-700' }} transition duration-300">
+                                    <button type="submit" class="px-4 py-2 {{ $post->isActif() ? 'bg-red-600' : 'bg-green-600' }} text-white rounded-lg shadow-md hover:{{ $post->isActif() ? 'bg-red-700' : 'bg-green-700' }} transition duration-300">
                                         {{ $post->isActif() ? 'Désactiver' : 'Activer' }}
                                     </button>
                                 </form>
                                 <!-- Supprimer le poste -->
-                                <form action="{{ route('posts.destroy', $post->id) }}" method="POST" class="inline-block ml-2">
+                                <form action="{{ route('posts.destroy', $post->id) }}" method="POST" class="inline-block">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="inline-block px-4 py-2 bg-red-600 text-white rounded-lg shadow-md hover:bg-gray-700 transition duration-300" onclick="return confirm('Confirmer la suppression ?')">
+                                    <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-lg shadow-md hover:bg-red-700 transition duration-300" onclick="return confirm('Confirmer la suppression ?')">
                                         Supprimer
                                     </button>
                                 </form>
@@ -95,5 +103,6 @@
             </tbody>
         </table>
     </div>
+
 </div>
 @endsection

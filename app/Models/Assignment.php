@@ -30,4 +30,12 @@ class Assignment extends Model
     {
         return $this->belongsTo(Post::class);
     }
+
+    public function trackingSteps()
+    {
+        return $this->belongsToMany(TrackingStep::class, 'assignment_tracking_step')
+                    ->withPivot('status', 'reason')
+                    ->withTimestamps();
+    }
+
 }

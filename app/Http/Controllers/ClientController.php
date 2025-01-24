@@ -28,13 +28,17 @@ class ClientController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:clients,email',
-            'phone' => 'nullable|string|max:15',
-            'address' => 'nullable|string|max:255',
-            'city' => 'nullable|string|max:100',
-            'country' => 'nullable|string|max:100',
+            
+            'name' => 'required|string|max:255',                 // Nom de l'entreprise ou du client
+            'activity' => 'required|string|max:255',             // Activité ou secteur d'activité
+            'address' => 'nullable|string|max:255',              // Adresse principale
+            'contact_name' => 'required|string|max:255',         // Nom du contact principal
+            'contact_position' => 'required|string|max:100',     // Poste du contact principal
+            'email' => 'required|email|unique:clients,contact_email', // Email du contact
+            'contact_phone' => 'nullable|string|max:15',         // Téléphone du contact principal
+              
         ]);
+        
 
         // Crée un nouveau client dans la base de données
         Client::create($request->all());
@@ -55,12 +59,13 @@ class ClientController extends Controller
         $client = Client::findOrFail($id);
 
         $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:clients,email,' . $client->id,
-            'phone' => 'nullable|string|max:15',
-            'address' => 'nullable|string|max:255',
-            'city' => 'nullable|string|max:100',
-            'country' => 'nullable|string|max:100',
+            'name' => 'required|string|max:255',                 // Nom de l'entreprise ou du client
+            'activity' => 'required|string|max:255',             // Activité ou secteur d'activité
+            'address' => 'nullable|string|max:255',              // Adresse principale
+            'contact_name' => 'required|string|max:255',         // Nom du contact principal
+            'contact_position' => 'required|string|max:100',     // Poste du contact principal
+            'contact_email' => 'required|email|unique:clients,contact_email', // Email du contact
+            'contact_phone' => 'nullable|string|max:15',         // Téléphone du contact principal
         ]);
 
         // Mise à jour des données du client

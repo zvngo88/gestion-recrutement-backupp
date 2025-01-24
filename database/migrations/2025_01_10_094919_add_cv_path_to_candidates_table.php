@@ -9,14 +9,13 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
     {
         Schema::table('candidates', function (Blueprint $table) {
-            $table->string('resume')->nullable();
-            $table->dropIndex('candidates_email_unique'); 
-            $table->unique('email');
+            $table->string('cv_path')->nullable()->after('status'); // Colonne pour le chemin du CV
         });
     }
+
 
     /**
      * Reverse the migrations.
@@ -24,7 +23,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('candidates', function (Blueprint $table) {
-            $table->dropColumn('resume');
+            //
         });
     }
 };

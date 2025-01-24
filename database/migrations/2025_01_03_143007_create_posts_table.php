@@ -11,11 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('candidates', function (Blueprint $table) {
-            $table->string('resume')->nullable();
-            $table->dropIndex('candidates_email_unique'); 
-            $table->unique('email');
-        });
+        if (!Schema::hasTable('posts')) {
+            Schema::create('posts', function (Blueprint $table) {
+                $table->id();
+                $table->string('title'); // Nom du poste
+                $table->timestamps();
+            });
+        }   
     }
 
     /**
@@ -23,8 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('candidates', function (Blueprint $table) {
-            $table->dropColumn('resume');
-        });
+        Schema::dropIfExists('posts');
     }
 };
