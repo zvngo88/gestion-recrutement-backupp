@@ -5,19 +5,35 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\Post;
+use App\Models\Client;
 
 
 class PostController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $posts = Post::all();
-        return view('posts.index', compact('posts'));
+        // Récupérer le terme de recherche
+        $search = $request->input('search');
+
+        // Charger les clients
+        $clients = Client::all();
+
+        // Filtrer les postes en fonction du terme de recherche
+        $posts = Post::when($search, function ($query, $search) {
+            return $query->whereHas('client', function ($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%');
+            });
+        })->with('client')->get();
+
+        return view('posts.index', compact('posts', 'clients'));
     }
 
     public function create()
     {
-        return view('posts.create');
+        // Récupérer tous les clients depuis la base de données
+        $clients = Client::all(); // Assurez-vous d'importer le modèle Client
+
+        return view('posts.create', compact('clients'));
     }
 
     public function store(Request $request)
@@ -27,8 +43,9 @@ class PostController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'start_date' => 'nullable|date|after_or_equal:today',
-            'duration' => 'nullable|integer|min:1', // La durée doit être un entier positif
-            'status' => 'required|in:Actif,Inactif', // Validation du statut
+            'duration' => 'nullable|integer|min:1',
+            'status' => 'required|in:Actif,Inactif',
+            'client_id' => 'required|exists:clients,id', // Validation du client
         ]);
 
         // Création d'un nouveau poste avec les données envoyées
@@ -38,6 +55,7 @@ class PostController extends Controller
             'start_date' => isset($validated['start_date']) ? Carbon::parse($validated['start_date']) : null,
             'duration' => $validated['duration'] ?? null,
             'status' => $validated['status'],
+            'client_id' => $validated['client_id'], // Ajout du client_id
         ]);
 
         // Ajout des étapes par défaut
@@ -63,6 +81,7 @@ class PostController extends Controller
     }
 
 
+
     public function show(Post $post)
     {
         return view('posts.show', compact('post'));
@@ -72,12 +91,14 @@ class PostController extends Controller
     {
         $post = Post::findOrFail($id);
 
+        $clients = Client::all();
+
         // Convertir start_date en instance de Carbon si ce n'est pas déjà un objet Carbon
         if ($post->start_date && !($post->start_date instanceof Carbon)) {
             $post->start_date = Carbon::parse($post->start_date);
         }
 
-        return view('posts.edit', compact('post'));
+        return view('posts.edit', compact('post', 'clients'));
     }
 
     public function update(Request $request, Post $post)
@@ -88,6 +109,7 @@ class PostController extends Controller
             'description' => 'nullable|string',
             'start_date' => 'nullable|date|after_or_equal:today',
             'duration' => 'nullable|integer|min:1',
+            'client_id' => 'nullable|exists:clients,id', // Validation du client
             'status' => 'required|in:Actif,Inactif',
         ]);
 
@@ -97,6 +119,7 @@ class PostController extends Controller
             'description' => $request->description,
             'start_date' => $request->start_date ? Carbon::parse($request->start_date) : null,
             'duration' => $request->duration,
+            'client_id' => $request->client_id, // Mise à jour du client_id
             'status' => $request->status,
         ]);
 
@@ -119,5 +142,11 @@ class PostController extends Controller
         $post->save();
 
         return redirect()->route('posts.index')->with('success', 'Le statut du poste a été mis à jour.');
+    }
+
+    public function getPostsByClient($clientId)
+    {
+        $posts = Post::where('client_id', $clientId)->get(['id', 'title']); // Renvoie les ID et titres des postes
+        return response()->json($posts);
     }
 }

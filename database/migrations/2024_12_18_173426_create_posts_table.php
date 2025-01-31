@@ -17,6 +17,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->date('start_date')->nullable();
             $table->integer('duration')->nullable();
+            $table->integer('client_id')->nullable();
             $table->enum('status', ['Actif', 'Inactif'])->default('Inactif');
             $table->timestamps();
         });

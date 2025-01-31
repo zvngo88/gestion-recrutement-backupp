@@ -67,4 +67,6 @@
         </tbody>
     </table>
 </div>
+<button class="flex justify-between items-center mb-8 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg shadow-md transition" onclick="window.print()">Imprimer la page</button>
+
 @endsection

@@ -15,14 +15,45 @@ class CandidateController extends Controller
      */
 
     
-    public function index()
+   
+
+    public function index(Request $request)
     {
-        $candidates = Candidate::all();
-        $posts = Post::all(); // Charger tous les postes disponibles
+        $search = $request->input('search');
+
+        // Recherche sur toutes les colonnes souhaitées
+        $candidates = Candidate::query()
+            ->when($search, function ($query, $search) {
+                return $query->where('first_name', 'like', "%{$search}%")
+                            ->orWhere('last_name', 'like', "%{$search}%")
+                            ->orWhere('email', 'like', "%{$search}%")
+                            ->orWhere('phone', 'like', "%{$search}%")
+                            ->orWhere('address', 'like', "%{$search}%")
+                            ->orWhere('current_position', 'like', "%{$search}%")
+                            ->orWhere('current_company', 'like', "%{$search}%")
+                            ->orWhere('skills', 'like', "%{$search}%")
+                            ->orWhere('school', 'like', "%{$search}%")
+                            ->orWhere('nationality', 'like', "%{$search}%");
+            })
+            ->paginate(10);  // Utilisez la pagination pour limiter le nombre de résultats à afficher
+
+        // Recherche sur les colonnes 'first_name' et 'last_name' des candidats
+        $assignments = Assignment::with(['post', 'candidate']) // Charger les relations 'post' et 'candidate'
+        ->when($search, function ($query, $search) {
+            return $query->whereHas('candidate', function ($query) use ($search) {
+                $query->where('first_name', 'like', "%{$search}%")
+                    ->orWhere('last_name', 'like', "%{$search}%");
+            });
+        })
+        ->paginate(10);
+
+        $posts = Post::all();  // Si vous avez besoin de lister des postes également
         $assignments = Assignment::with(['post', 'candidate'])->get();
 
-        return view('candidates.index', compact('candidates', 'posts', 'assignments'));
+
+        return view('candidates.index', compact('candidates', 'assignments', 'posts'));
     }
+
 
     /**
      * Affiche les détails d'un candidat.
@@ -100,6 +131,7 @@ class CandidateController extends Controller
         return view('candidates.track', compact('assignment', 'steps', 'candidate'));
     }
 
+
     
 
     /**
@@ -134,8 +166,7 @@ class CandidateController extends Controller
     
         if ($request->hasFile('cv')) {
             $cvPath = $request->file('cv')->store('cv', 'public'); // Enregistre le fichier dans storage/app/public/cv
-        } else {
-            $cvPath = null;
+            $validatedData['cv'] = $cvPath; // Ajoute le chemin du fichier aux données validées
         }
     
         $candidate = Candidate::create([
@@ -155,8 +186,7 @@ class CandidateController extends Controller
             
         ]);
     
-        // Vérifie si le CV a été téléchargé
-        $cvUrl = $cvPath ? asset('storage/' . $cvPath) : null;
+        
     
         // Redirige avec un message et passe le lien du CV
         return redirect()->route('candidates.index')->with('success', 'Candidat créé avec succès.');
@@ -192,6 +222,7 @@ class CandidateController extends Controller
             'nationality' => 'nullable|string|max:255',
             'status' => 'required|string|in:Disponible,Affecté',
             'cv' => 'nullable|file|mimes:pdf,doc,docx|max:2048', // Validation du fichier CV
+            'history' => 'nullable|string', // Validation du champ historique
         ]);
 
         // Gestion du CV
@@ -215,6 +246,7 @@ class CandidateController extends Controller
             'school' => $validatedData['school'],
             'nationality' => $validatedData['nationality'],
             'status' => $validatedData['status'],
+            'history' => $validatedData['history'], // Mise à jour du champ historique
         ]);
 
         return redirect()->route('candidates.index')->with('success', 'Candidat mis à jour avec succès.');
@@ -291,45 +323,46 @@ class CandidateController extends Controller
 
     public function updateSteps(Request $request, $candidateId)
     {
-        // Validez les données du formulaire
+        // Valider les données du formulaire
         $request->validate([
             'status.*' => 'required|in:ok,notok',
             'reason.*' => 'nullable|string|max:255',
+        ], [
+            'status.*.required' => 'Le statut est obligatoire pour chaque étape.',
+            'status.*.in' => 'Le statut doit être "ok" ou "notok".',
+            'reason.*.max' => 'La raison ne doit pas dépasser 255 caractères.',
         ]);
 
         // Récupérer l'affectation et le candidat
         $assignment = Assignment::with('candidate')->where('candidate_id', $candidateId)->first();
-        
+
         if (!$assignment) {
             return redirect()->back()->with('error', 'Affectation introuvable.');
         }
 
-        // Récupérer le candidat associé à l'affectation
-        $candidate = $assignment->candidate;
-
         // Récupérer les étapes associées à cette affectation
         $steps = TrackingStep::where('assignment_id', $assignment->id)->get();
 
-        // Vérifier que $request->status est bien un tableau
-        if (is_array($request->status) || is_object($request->status)) {
-            // Logique pour mettre à jour les étapes
-            foreach ($request->status as $index => $status) {
-                $step = TrackingStep::where('assignment_id', $assignment->id)->skip($index)->first();
-                if ($step) {
-                    $step->update([
-                        'status' => $status,
-                        'reason' => $request->reason[$index] ?? null,
-                    ]);
-                }
+        // Mettre à jour chaque étape
+        foreach ($steps as $index => $step) {
+            $status = $request->status[$index] ?? null;
+            $reason = $request->reason[$index] ?? null;
+
+            if ($status) {
+                $step->update([
+                    'status' => $status,
+                    'reason' => $reason,
+                ]);
             }
-        } else {
-            // Si $request->status n'est pas un tableau, vous pouvez gérer le cas ici
-            return redirect()->back()->with('error', 'Les données de statut sont invalides.');
         }
 
-        // Retourner la vue avec les étapes mises à jour et l'affectation du candidat
-        return view('candidates.track', compact('assignment', 'steps', 'candidate'))
-            ->with('success', 'Étapes mises à jour avec succès.');
+        
+            // Si la requête est standard, rediriger avec un message de succès
+        return redirect()->route('candidates.track', $candidateId)
+            ->with('success', 'Étapes mises à jour avec succès.')
+            ->with('assignment', $assignment)
+            ->with('steps', $steps);
+        
     }
 
 
@@ -399,6 +432,21 @@ class CandidateController extends Controller
 
         return redirect()->back()->with('success', 'CV téléchargé avec succès.');
     }
+
+    public function searchPosts(Request $request)
+    {
+        $query = $request->input('q', ''); // Terme de recherche
+        $posts = Post::where('title', 'LIKE', "%$query%")
+            ->paginate(10); // Pagination si nécessaire
+
+        return response()->json([
+            'items' => $posts->items(),
+            'pagination' => [
+                'more' => $posts->hasMorePages()
+            ]
+        ]);
+    }
+
 
 
 

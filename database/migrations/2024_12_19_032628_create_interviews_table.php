@@ -14,12 +14,15 @@ return new class extends Migration
         Schema::create('interviews', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('client_id');
+            $table->unsignedBigInteger('post_id');
             $table->unsignedBigInteger('candidate_id');
             $table->dateTime('interview_date');
             $table->timestamps();
 
             $table->foreign('client_id')->references('id')->on('clients')->onDelete('cascade');
+            $table->foreign('post_id')->references('id')->on('posts')->onDelete('cascade');
             $table->foreign('candidate_id')->references('id')->on('candidates')->onDelete('cascade');
+            
         });
     }
 

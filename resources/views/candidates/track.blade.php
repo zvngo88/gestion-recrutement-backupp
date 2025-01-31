@@ -15,95 +15,208 @@
     @endif
 
     <h3 class="mb-4 font-bold">Étapes :</h3>
-    <form action="{{ route('candidates.updateSteps', ['candidate' => $candidate->id]) }}" method="POST" id="updateStepsForm">
-        @csrf
-        @method('PUT')
-        @foreach ($steps as $index => $step)
-            <div class="mb-6 step" id="step-{{ $index }}">
-                <p class="font-semibold">{{ $step->name }}</p>
-
-                <label>
-                    <input 
-                        type="radio" 
-                        name="status[{{ $index }}]" 
-                        value="notok" 
-                        class="status-radio" 
-                        data-index="{{ $index }}" 
-                        {{ $step->status == 'notok' ? 'checked' : '' }}
-                    > ok
-                </label>
-
-                <label>
-                    <input 
-                        type="radio" 
-                        name="status[{{ $index }}]" 
-                        value="ok" 
-                        class="status-radio" 
-                        data-index="{{ $index }}" 
-                        {{ $step->status == 'ok' ? 'checked' : '' }}
-                    > not ok
-                </label>
-                
-
-                <textarea 
-                    name="reason[{{ $index }}]" 
-                    id="reason-{{ $index }}" 
-                    class="reason-input mt-2 w-full p-2 border rounded" 
-                    placeholder="Raison (optionnel)" 
-                    rows="2"
-                    style="display: {{ $step->status == 'notok' ? 'block' : 'none' }};"
-                    {{ $step->status == 'notok' ? '' : 'disabled' }}
-                >{{ $step->reason }}</textarea>
+    <div id="etapes" data-candidat-id="{{ $assignment->candidate->id }}" data-poste-id="{{ $assignment->post->id }}" >
+        <!-- Étape 1: Préselection -->
+        <div class="etape">
+            <p>Étape 1: Préselection</p>
+            <label>
+                <input type="radio" name="etape1" value="ok"> OK
+            </label>
+            <label>
+                <input type="radio" name="etape1" value="notok"> Not OK
+            </label>
+            <div class="raison" style="display: none;">
+                <textarea placeholder="Entrez la raison..."></textarea>
             </div>
-        @endforeach
-
-        <div class="mt-6">
-             <a href="#" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500" onclick="document.getElementById('updateStepsForm').submit();">Mettre à jour les étapes</a>
         </div>
-    </form>
+
+        <!-- Étape 2: Premier contact -->
+        <div class="etape">
+            <p>Étape 2: Premier contact</p>
+            <label>
+                <input type="radio" name="etape2" value="ok"> OK
+            </label>
+            <label>
+                <input type="radio" name="etape2" value="notok"> Not OK
+            </label>
+            <div class="raison" style="display: none;">
+                <textarea placeholder="Entrez la raison..."></textarea>
+            </div>
+        </div>
+
+        <!-- Étape 3.1: 1er entretien -->
+        <div class="etape">
+            <p>Étape 3.1: 1er entretien</p>
+            <label>
+                <input type="radio" name="etape3_1" value="ok"> OK
+            </label>
+            <label>
+                <input type="radio" name="etape3_1" value="notok"> Not OK
+            </label>
+            <div class="raison" style="display: none;">
+                <textarea placeholder="Entrez la raison..."></textarea>
+            </div>
+        </div>
+
+        <div class="etape">
+            <p>Étape 3.2: 2e entretien</p>
+            <label>
+                <input type="radio" name="etape3_2" value="ok"> OK
+            </label>
+            <label>
+                <input type="radio" name="etape3_2" value="notok"> Not OK
+            </label>
+            <div class="raison" style="display: none;">
+                <textarea placeholder="Entrez la raison..."></textarea>
+            </div>
+        </div>
+
+        <div class="etape">
+            <p>Étape 4: Évaluation</p>
+            <label>
+                <input type="radio" name="etape4" value="ok"> OK
+            </label>
+            <label>
+                <input type="radio" name="etape4" value="notok"> Not OK
+            </label>
+            <div class="raison" style="display: none;">
+                <textarea placeholder="Entrez la raison..."></textarea>
+            </div>
+        </div>
+
+        <div class="etape">
+            <p>Étape 5: Qualification de la candidature</p>
+            <label>
+                <input type="radio" name="etape5" value="ok"> OK
+            </label>
+            <label>
+                <input type="radio" name="etape5" value="notok"> Not OK
+            </label>
+            <div class="raison" style="display: none;">
+                <textarea placeholder="Entrez la raison..."></textarea>
+            </div>
+        </div>
+
+        <div class="etape">
+            <p>Étape 6: Présentation de l'entreprise</p>
+            <label>
+                <input type="radio" name="etape6" value="ok"> OK
+            </label>
+            <label>
+                <input type="radio" name="etape6" value="notok"> Not OK
+            </label>
+            <div class="raison" style="display: none;">
+                <textarea placeholder="Entrez la raison..."></textarea>
+            </div>
+        </div>
+
+        <div class="etape">
+            <p>Étape 7: Confirmation de la candidature</p>
+            <label>
+                <input type="radio" name="etape7" value="ok"> OK
+            </label>
+            <label>
+                <input type="radio" name="etape7" value="notok"> Not OK
+            </label>
+            <div class="raison" style="display: none;">
+                <textarea placeholder="Entrez la raison..."></textarea>
+            </div>
+        </div>
+
+    </div>
+
+    <button id="suivre" class="flex justify-between items-center mb-8 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg shadow-md transition">Enregistrer et Suivre</button>
+
+    <button class="flex justify-between items-center mb-8 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg shadow-md transition" onclick="window.print()">Imprimer la page</button>
+
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const radios = document.querySelectorAll('.status-radio');
+    document.addEventListener('DOMContentLoaded', function() {
+        const etapesContainer = document.getElementById('etapes');
+        const candidatId = etapesContainer.getAttribute('data-candidat-id'); // Récupérer l'ID du candidat
+        const posteId = etapesContainer.getAttribute('data-poste-id'); // Récupérer l'ID du poste
+        const etapes = etapesContainer.querySelectorAll('.etape');
 
-    radios.forEach(radio => {
-        radio.addEventListener('change', function () {
-            const currentIndex = parseInt(this.dataset.index);
-            const isOk = this.value === 'ok';
-            const isNotOk = this.value === 'notok';
+        // Charger les données sauvegardées pour ce candidat et poste
+        const savedData = JSON.parse(localStorage.getItem('suiviCandidats')) || {};
+        const posteData = savedData[posteId] || {};
+        const candidatData = posteData[candidatId] || [];
 
-            // Champ "Raison" pour l'étape actuelle
-            const reasonField = document.querySelector(`#reason-${currentIndex}`);
-            if (reasonField) {
-                // Si "OK" est sélectionné, afficher le champ de raison
-                // Si "NOT OK" est sélectionné, masquer le champ de raison
-                reasonField.style.display = isOk ? 'block' : 'none';
-                reasonField.disabled = !isOk;
-            }
-
-            // Désactiver les étapes suivantes si "OK" est sélectionné
-            radios.forEach(otherRadio => {
-                const otherIndex = parseInt(otherRadio.dataset.index);
-                if (otherIndex > currentIndex) {
-                    otherRadio.disabled = isOk;
-                } else {
-                    otherRadio.disabled = false;
+        if (candidatData.length > 0) {
+            candidatData.forEach(item => {
+                const etape = etapes[item.etape - 1];
+                const radio = etape.querySelector(`input[value="${item.status}"]`);
+                if (radio) {
+                    radio.checked = true;
+                    if (item.status === 'notok') {
+                        etape.querySelector('.raison').style.display = 'block';
+                        etape.querySelector('textarea').value = item.raison;
+                        // Désactiver les étapes suivantes
+                        for (let i = item.etape; i < etapes.length; i++) {
+                            etapes[i].querySelectorAll('input[type="radio"]').forEach(input => {
+                                input.disabled = true;
+                            });
+                        }
+                    }
                 }
             });
+        }
 
-            // Désactiver ou masquer les champs de raison des étapes suivantes
-            document.querySelectorAll('.reason-input').forEach((textarea, idx) => {
-                if (idx > currentIndex) {
-                    textarea.disabled = isOk; // Désactiver si "OK" est sélectionné
-                    textarea.style.display = isOk ? 'none' : 'block'; // Toujours masquer les champs suivants si "OK"
-                }
+        // Gérer les changements de statut (OK / Not OK)
+        etapes.forEach((etape, index) => {
+            const radios = etape.querySelectorAll('input[type="radio"]');
+            const raison = etape.querySelector('.raison');
+
+            radios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (this.value === 'notok') {
+                        raison.style.display = 'block';
+                        // Désactiver les étapes suivantes
+                        for (let i = index + 1; i < etapes.length; i++) {
+                            etapes[i].querySelectorAll('input[type="radio"]').forEach(input => {
+                                input.disabled = true;
+                            });
+                        }
+                    } else {
+                        raison.style.display = 'none';
+                        // Réactiver les étapes suivantes
+                        for (let i = index + 1; i < etapes.length; i++) {
+                            etapes[i].querySelectorAll('input[type="radio"]').forEach(input => {
+                                input.disabled = false;
+                            });
+                        }
+                    }
+                });
             });
         });
+
+        // Enregistrer les données lorsque l'utilisateur clique sur "Enregistrer et Suivre"
+        document.getElementById('suivre').addEventListener('click', function() {
+            const data = [];
+            etapes.forEach((etape, index) => {
+                const selected = etape.querySelector('input[type="radio"]:checked');
+                if (selected) {
+                    data.push({
+                        etape: index + 1,
+                        status: selected.value,
+                        raison: selected.value === 'notok' ? etape.querySelector('textarea').value : null
+                    });
+                }
+            });
+
+            // Sauvegarder les données spécifiquement pour ce poste et candidat
+            const suiviCandidats = JSON.parse(localStorage.getItem('suiviCandidats')) || {};
+            if (!suiviCandidats[posteId]) {
+                suiviCandidats[posteId] = {};
+            }
+            suiviCandidats[posteId][candidatId] = data;  // Utiliser l'ID du candidat et du poste pour l'enregistrement spécifique
+            localStorage.setItem('suiviCandidats', JSON.stringify(suiviCandidats));
+
+            console.log('Données enregistrées pour', candidatId, posteId, ':', data);
+            alert('Données enregistrées avec succès !');
+        });
     });
-});
-
-
 
 </script>
 @endsection

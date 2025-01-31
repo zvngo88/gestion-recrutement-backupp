@@ -10,6 +10,31 @@
         </a>
     </div>
 
+    <!-- Formulaire de recherche -->
+    <div class="mb-6">
+        <form action="{{ route('posts.index') }}" method="GET" class="flex items-center">
+            <input
+                type="text"
+                name="search"
+                placeholder="Rechercher par client..."
+                value="{{ request('search') }}"
+                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+            <button type="submit" class="ml-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition duration-300">
+                Rechercher
+            </button>
+        </form>
+    </div>
+
+    <!-- Réinitialiser la recherche -->
+    @if (request('search'))
+        <div class="mt-4">
+            <a href="{{ route('posts.index') }}" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition duration-300">
+                Réinitialiser la recherche
+            </a>
+        </div>
+    @endif
+
     <!-- Messages -->
     @if (session('success'))
         <div class="mb-4 p-4 bg-green-100 text-green-700 rounded-lg shadow-md border-l-4 border-green-500">
@@ -34,6 +59,7 @@
                     <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Date de début</th>
                     <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Durée (en jours)</th>
                     <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Date de création</th>
+                    <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Client</th> 
                     <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Statut</th>
                     <th class="px-6 py-4 text-center text-sm font-semibold text-gray-700">Actions</th>
                 </tr>
@@ -54,6 +80,9 @@
                         </td>
                         <td class="px-6 py-4 text-sm text-gray-700 border-b border-gray-200">
                             {{ \Carbon\Carbon::parse($post->created_at)->format('d/m/Y') }}
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-700 border-b border-gray-200">
+                            {{ $post->client ? $post->client->name : 'Aucun client' }}
                         </td>
                         <td class="px-6 py-4 text-sm font-medium text-gray-700 border-b border-gray-200">
                             <span class="px-4 py-2 text-sm font-semibold rounded-full {{ $post->status === 'Actif' ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800' }}">
@@ -104,5 +133,6 @@
         </table>
     </div>
 
+    <button class="flex justify-between items-center mb-8 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg shadow-md transition" onclick="window.print()">Imprimer la page</button>
 </div>
 @endsection

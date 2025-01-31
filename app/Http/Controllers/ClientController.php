@@ -82,4 +82,17 @@ class ClientController extends Controller
 
         return redirect()->route('clients.index')->with('success', 'Client supprimé avec succès.');
     }
+
+    public function search(Request $request)
+    {
+        $query = $request->get('q', '');
+
+        $clients = Client::where('name', 'like', "%{$query}%")
+            ->select('id', 'name') // Sélectionne uniquement les colonnes nécessaires
+            ->get();
+
+        return response()->json($clients);
+    }
+
+
 }

@@ -39,6 +39,23 @@
             </div>
 
             <div class="mb-6">
+                <label for="client_id" class="block text-lg font-medium text-gray-700 mb-2">Client</label>
+                <select name="client_id" id="client_id" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">Sélectionnez un client</option>
+                    @foreach($clients as $client)
+                        <option value="{{ $client->id }}" {{ old('client_id', $post->client_id) == $client->id ? 'selected' : '' }}>
+                            {{ $client->name }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('client_id')
+                    <span class="text-sm text-red-500">{{ $message }}</span>
+                @enderror
+            </div>
+
+            
+
+            <div class="mb-6">
                 <label for="status" class="block text-lg font-medium text-gray-700 mb-2">Statut</label>
                 <select name="status" id="status" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <option value="Actif" {{ old('status', $post->status) == 'Actif' ? 'selected' : '' }}>Actif</option>

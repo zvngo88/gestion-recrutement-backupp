@@ -10,7 +10,7 @@ class Candidate extends Model
         'name', 'email', 'status', 'skills', 'resume',
         'first_name', 'last_name', 'phone', 'address',
         'current_position', 'current_company', 'domains',
-        'diploma', 'school', 'nationality'
+        'diploma', 'school', 'nationality','history'
     ];
 
 
@@ -24,5 +24,9 @@ class Candidate extends Model
     public function posts()
     {
         return $this->belongsToMany(Post::class);
+    }
+
+    public function interviews() {
+        return $this->hasMany(Interview::class);
     }
 }

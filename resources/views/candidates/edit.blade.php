@@ -93,9 +93,24 @@
                     <option value="Affecté" {{ old('status', $candidate->status) == 'Affecté' ? 'selected' : '' }}>Affecté</option>
                 </select>
             </div>
+
+            <!-- Historique -->
+            <div>
+                <label for="history" class="block text-sm font-semibold text-gray-600">Historique</label>
+                <textarea
+                    name="history"
+                    id="history"
+                    rows="4"
+                    class="mt-1 block w-full px-4 py-2 border rounded-md"
+                    placeholder="Ajoutez des commentaires ou des notes sur le candidat..."
+                >{{ old('history', $candidate->history) }}</textarea>
+            </div>
         </div>
 
         <button type="submit" class="mt-6 px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all duration-300">Mettre à Jour le Candidat</button>
     </form>
+
+    <button class="flex justify-between items-center mb-8 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg shadow-md transition" onclick="window.print()">Imprimer la page</button>
+
 </div>
 @endsection

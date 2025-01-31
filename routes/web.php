@@ -18,6 +18,7 @@ Route::get('/', function () {
 
 Route::resource('posts', PostController::class);
 
+
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
@@ -57,8 +58,22 @@ Route::prefix('posts/{post}/steps')->group(function () {
 Route::post('/assignments/store', [CandidateController::class, 'storeAssignment'])->name('assignments.store');
 
 
+
 Route::put('candidates/{candidate}/steps', [CandidateController::class, 'updateSteps'])->name('candidates.updateSteps');
+
+Route::put('candidates/{id}/steps', [CandidateController::class, 'updateSteps'])->name('candidates.steps.update');
 Route::post('/candidates/{id}/upload-cv', [CandidateController::class, 'uploadCv'])->name('candidates.uploadCv');
+
+
+Route::get('/api/posts/search', function (Illuminate\Http\Request $request) {
+    $search = $request->get('q', ''); // Terme de recherche
+    $posts = Post::query()
+        ->where('title', 'like', '%' . $search . '%') // Rechercher par titre
+        ->take(10) // Limitez les résultats
+        ->get(['id', 'title']); // Récupérez uniquement les colonnes nécessaires
+
+    return response()->json($posts);
+});
 
 Route::get('/candidates/{candidate}/assign', [CandidateController::class, 'assign'])->name('candidates.assign');
 Route::post('/candidates/{candidate}/assign', [CandidateController::class, 'storeAssignment'])->name('candidates.storeAssignment');
@@ -73,9 +88,19 @@ Route::get('/assignments/{assignment}', [CandidateController::class, 'track'])->
 Route::get('/candidates/{candidate}/track', [CandidateController::class, 'track'])->name('candidates.track');
 Route::post('/candidates/{candidate}/track', [CandidateController::class, 'storeTracking'])->name('candidates.storeTracking');
 Route::patch('/posts/{post}/steps/{step}', [StepController::class, 'update'])->name('steps.update');
+
+
+Route::resource('interviews', InterviewController::class);
 Route::get('/interviews', [InterviewController::class, 'index'])->name('interviews.index');
 Route::post('/interviews', [InterviewController::class, 'store'])->name('interviews.store');
 Route::get('/interviews/{id}/email', [InterviewController::class, 'sendOutlookEmail'])->name('interviews.email');
 
 
 Route::resource('clients', ClientController::class);
+Route::get('/clients/search', [ClientController::class, 'search'])->name('clients.search');
+Route::get('/posts-by-client/{clientId}', function ($clientId) {
+    $posts = Post::where('client_id', $clientId)->get();
+    return response()->json($posts);
+});
+Route::get('/candidates-by-post/{postId}', [InterviewController::class, 'getCandidatesByPost']);
+

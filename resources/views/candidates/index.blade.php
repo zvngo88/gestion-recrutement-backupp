@@ -10,6 +10,9 @@
         </a>
     </div>
 
+    <button class="flex justify-between items-center mb-8 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg shadow-md transition" onclick="window.print()">Imprimer la page</button>
+
+
     <!-- Message de succès -->
     @if(session('success'))
         <div class="mb-6 p-4 bg-green-100 border-l-4 border-green-500 text-green-700 rounded-lg shadow-sm">
@@ -17,20 +20,30 @@
         </div>
     @endif
 
-    <!-- Recherche -->
-    <form method="GET" action="{{ route('candidates.index') }}" class="mb-6">
-        <div class="relative">
+    <!-- Formulaire de recherche -->
+    <div class="mb-6">
+        <form action="{{ route('candidates.index') }}" method="GET" class="flex items-center">
             <input
                 type="text"
                 name="search"
-                class="w-full p-4 pl-10 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Rechercher un candidat..."
-                value="{{ request('search') }}">
-            <svg class="absolute left-3 top-4 w-5 h-5 text-gray-400" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path d="M10 2a8 8 0 105.292 14.5l4.31 4.31a1 1 0 001.414-1.414l-4.31-4.31A8 8 0 0010 2zm0 2a6 6 0 110 12A6 6 0 0110 4z"/>
-            </svg>
+                placeholder="Rechercher "
+                value="{{ request('search') }}"
+                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+            <button type="submit" class="ml-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition duration-300">
+                Rechercher
+            </button>
+        </form>
+    </div>
+
+    <!-- Réinitialiser la recherche -->
+    @if (request('search'))
+        <div class="mt-4">
+            <a href="{{ route('candidates.index') }}" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition duration-300">
+                Réinitialiser la recherche
+            </a>
         </div>
-    </form>
+    @endif
 
     <!-- Tableau des candidats -->
     <table class="table-auto w-full text-left border-collapse">
@@ -71,10 +84,8 @@
                             <button type="submit" class="bg-blue-500 text-white px-4 py-2">Télécharger</button>
                         </form>
 
-                        @if($candidate->cv) <!-- Vérifie si le CV existe -->
-                            <br>
-                            <a href="{{ asset('storage/' . $candidate->cv) }}" target="_blank" class="text-blue-500">Voir le CV</a> <!-- Lien vers le CV -->
-                        @endif
+                    
+                   
                     </td>
 
 
@@ -95,7 +106,7 @@
                     <td class="border px-4 py-2">
                         
                         <a href="{{ route('candidates.edit', $candidate->id) }}" class="text-yellow-500 hover:text-yellow-600 ml-2">
-                            Modifier
+                            Afficher
                         </a>
                         <form action="{{ route('candidates.destroy', $candidate->id) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce candidat ?');" class="inline">
                             @csrf
@@ -114,8 +125,9 @@
 
     
 
-    <!-- Tableau des affectations -->
+   <!-- Tableau des affectations -->
     <h2 class="text-2xl font-bold text-gray-800 mt-8">Affectations</h2>
+    
     <table class="table-auto w-full text-left border-collapse mt-4">
         <thead>
             <tr class="bg-gray-100">
@@ -132,7 +144,8 @@
                     <td class="border px-4 py-2">{{ $assignment->candidate->first_name }} {{ $assignment->candidate->last_name }}</td>
                     <td class="border px-4 py-2">{{ $assignment->assigned_at }}</td>
                     <td class="border px-4 py-2">
-                      <a href="{{ route('assignments.track', $assignment->id) }}" class="px-4 py-2 bg-blue-600 text-white rounded">Suivre</a>
+                        <!-- Lien unique vers chaque affectation -->
+                        <a href="{{ route('assignments.track', $assignment->id) }}" class="px-4 py-2 bg-blue-600 text-white rounded">Suivre</a>
                     </td>
                 </tr>
             @empty
@@ -142,5 +155,7 @@
             @endforelse
         </tbody>
     </table>
-</div>
+    </div>
 @endsection
+
+
