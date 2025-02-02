@@ -127,6 +127,37 @@
 
    <!-- Tableau des affectations -->
     <h2 class="text-2xl font-bold text-gray-800 mt-8">Affectations</h2>
+
+    <!-- Formulaire de recherche pour les affectations -->
+    <div class="mb-6" style="display: block !important;">
+        <form action="{{ route('candidates.index') }}" method="GET" class="flex items-center">
+            <input
+                type="text"
+                name="search_post"
+                placeholder="Rechercher par poste"
+                value="{{ request('search_post') }}"
+                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+            <input
+                type="text"
+                name="search_candidate" *
+                placeholder="Rechercher par candidat"
+                value="{{ request('search_candidate') }}"
+                class="w-full px-4 py-2 ml-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+            <button type="submit" class="ml-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition duration-300">
+                Rechercher
+            </button>
+        </form>
+    </div>
+
+    @if (request('search_post') || request('search_candidate'))
+        <div class="mt-4">
+            <a href="{{ route('candidates.index') }}" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition duration-300">
+                Réinitialiser la recherche
+            </a>
+        </div>
+    @endif
     
     <table class="table-auto w-full text-left border-collapse mt-4">
         <thead>

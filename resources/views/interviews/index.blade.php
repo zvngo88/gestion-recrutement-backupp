@@ -61,6 +61,61 @@
 
     <div class="mt-8">
         <h2 class="text-2xl font-semibold text-gray-700">Entretiens Planifiés</h2>
+
+        <!-- Moteur de recherche -->
+        <div class="my-6 bg-white p-4 rounded-lg shadow">
+            <form action="{{ route('interviews.index') }}" method="GET" class="flex items-center gap-4">
+                <!-- Recherche par client -->
+                <div class="flex-1">
+                    <input
+                        type="text"
+                        name="search_client"
+                        placeholder="Rechercher par client"
+                        value="{{ request('search_client') }}"
+                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                </div>
+
+                <!-- Recherche par poste -->
+                <div class="flex-1">
+                    <input
+                        type="text"
+                        name="search_post"
+                        placeholder="Rechercher par poste"
+                        value="{{ request('search_post') }}"
+                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                </div>
+
+                <!-- Recherche par candidat -->
+                <div class="flex-1">
+                    <input
+                        type="text"
+                        name="search_candidate"
+                        placeholder="Rechercher par candidat"
+                        value="{{ request('search_candidate') }}"
+                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                </div>
+
+                <!-- Boutons -->
+                <div class="flex gap-2">
+                    <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition duration-300">
+                        🔍 Rechercher
+                    </button>
+                    @if(request()->hasAny(['search_client', 'search_post', 'search_candidate']))
+                        <a href="{{ route('interviews.index') }}" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition duration-300">
+                            ⟳ Réinitialiser
+                        </a>
+                    @endif
+                </div>
+            </form>
+        </div>
+
+        
+
+       
+
             <table class="mt-6 w-full bg-white shadow-md rounded-lg overflow-hidden">
             <thead class="bg-gray-100">
                 <tr>

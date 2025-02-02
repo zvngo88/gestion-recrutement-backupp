@@ -34,11 +34,30 @@ class InterviewController extends Controller {
         return redirect()->route('interviews.index')->with('success', 'Entretien planifié avec succès.');
     }
 
-    public function index() {
-        $interviews = Interview::with(['client', 'post', 'candidate'])->get();
-        $clients = Client::all(); // Récupérer tous les clients
-        $posts = Post::all();     // Récupérer tous les postes
-        $candidates = Candidate::all(); // Récupérer tous les candidats
+
+    public function index(Request $request)
+    {
+        $interviews = Interview::with(['client', 'post', 'candidate'])
+            ->when($request->filled('search_client'), function ($query) use ($request) {
+                $query->whereHas('client', function ($q) use ($request) {
+                    $q->where('name', 'like', '%' . $request->search_client . '%');
+                });
+            })
+            ->when($request->filled('search_post'), function ($query) use ($request) {
+                $query->whereHas('post', function ($q) use ($request) {
+                    $q->where('title', 'like', '%' . $request->search_post . '%');
+                });
+            })
+            ->when($request->filled('search_candidate'), function ($query) use ($request) {
+                $query->whereHas('candidate', function ($q) use ($request) {
+                    $q->where('name', 'like', '%' . $request->search_candidate . '%');
+                });
+            })
+            ->get();
+    
+        $clients = Client::all();
+        $posts = Post::all();
+        $candidates = Candidate::all();
     
         return view('interviews.index', compact('interviews', 'clients', 'posts', 'candidates'));
     }

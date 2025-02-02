@@ -17,42 +17,47 @@ class CandidateController extends Controller
     
    
 
-    public function index(Request $request)
-    {
-        $search = $request->input('search');
-
-        // Recherche sur toutes les colonnes souhaitées
-        $candidates = Candidate::query()
-            ->when($search, function ($query, $search) {
-                return $query->where('first_name', 'like', "%{$search}%")
-                            ->orWhere('last_name', 'like', "%{$search}%")
-                            ->orWhere('email', 'like', "%{$search}%")
-                            ->orWhere('phone', 'like', "%{$search}%")
-                            ->orWhere('address', 'like', "%{$search}%")
-                            ->orWhere('current_position', 'like', "%{$search}%")
-                            ->orWhere('current_company', 'like', "%{$search}%")
-                            ->orWhere('skills', 'like', "%{$search}%")
-                            ->orWhere('school', 'like', "%{$search}%")
-                            ->orWhere('nationality', 'like', "%{$search}%");
-            })
-            ->paginate(10);  // Utilisez la pagination pour limiter le nombre de résultats à afficher
-
-        // Recherche sur les colonnes 'first_name' et 'last_name' des candidats
-        $assignments = Assignment::with(['post', 'candidate']) // Charger les relations 'post' et 'candidate'
-        ->when($search, function ($query, $search) {
-            return $query->whereHas('candidate', function ($query) use ($search) {
-                $query->where('first_name', 'like', "%{$search}%")
-                    ->orWhere('last_name', 'like', "%{$search}%");
-            });
-        })
-        ->paginate(10);
-
-        $posts = Post::all();  // Si vous avez besoin de lister des postes également
-        $assignments = Assignment::with(['post', 'candidate'])->get();
-
-
-        return view('candidates.index', compact('candidates', 'assignments', 'posts'));
-    }
+     public function index(Request $request)
+     {
+         $searchCandidate = $request->input('search'); // Recherche pour les candidats
+         $searchPost = $request->input('search_post'); // Recherche pour les affectations (poste)
+         $searchAssignmentCandidate = $request->input('search_candidate'); // Recherche pour les affectations (candidat)
+ 
+         // Recherche sur les candidats
+         $candidates = Candidate::query()
+             ->when($searchCandidate, function ($query, $searchCandidate) {
+                 return $query->where('first_name', 'like', "%{$searchCandidate}%")
+                             ->orWhere('last_name', 'like', "%{$searchCandidate}%")
+                             ->orWhere('email', 'like', "%{$searchCandidate}%")
+                             ->orWhere('phone', 'like', "%{$searchCandidate}%")
+                             ->orWhere('address', 'like', "%{$searchCandidate}%")
+                             ->orWhere('current_position', 'like', "%{$searchCandidate}%")
+                             ->orWhere('current_company', 'like', "%{$searchCandidate}%")
+                             ->orWhere('skills', 'like', "%{$searchCandidate}%")
+                             ->orWhere('school', 'like', "%{$searchCandidate}%")
+                             ->orWhere('nationality', 'like', "%{$searchCandidate}%");
+             })
+             ->paginate(10, ['*'], 'candidates_page'); // 'candidates_page' est le nom du paramètre de pagination
+ 
+         // Recherche sur les affectations par poste et candidat
+         $assignments = Assignment::with(['post', 'candidate'])
+             ->when($searchPost, function ($query, $searchPost) {
+                 return $query->whereHas('post', function ($q) use ($searchPost) {
+                     $q->where('title', 'like', "%{$searchPost}%");
+                 });
+             })
+             ->when($searchAssignmentCandidate, function ($query, $searchAssignmentCandidate) {
+                 return $query->whereHas('candidate', function ($q) use ($searchAssignmentCandidate) {
+                     $q->where('first_name', 'like', "%{$searchAssignmentCandidate}%")
+                       ->orWhere('last_name', 'like', "%{$searchAssignmentCandidate}%");
+                 });
+             })
+             ->paginate(10, ['*'], 'assignments_page'); // 'assignments_page' est le nom du paramètre de pagination
+ 
+         $posts = Post::all();
+ 
+         return view('candidates.index', compact('candidates', 'assignments', 'posts'));
+     }
 
 
     /**
